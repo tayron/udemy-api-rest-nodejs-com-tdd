@@ -13,3 +13,85 @@ Link do curso: https://www.udemy.com/course/api-rest-nodejs-com-testes
 * Diversas estratégias de roteamento do express
 * Estratégias para gerenciamento de massa de dados
 * Gerenciar logs na aplicação
+
+
+## Instalando Eslint
+```sh
+npm install eslint --save-dev
+```
+
+### Configurando Eslint
+```sh
+node_modules/.bin/eslint --init
+```
+
+### Executando Eslint
+```sh
+node_modules/.bin/eslint inde.js
+```
+
+### Executando Eslint e pedindo para corrigir
+```sh
+node_modules/.bin/eslint inde.js --fix
+```
+
+## Instalando Jest
+```sh
+npm i -D jest@23.6.0 -E
+```
+**Obs.:** A flag -E é para garantir que a versão do jest não seja alterada no futuro
+
+## Instalando Jest
+```sh
+npm i -D supertest@3.3.0 -E
+```
+
+## Instalando Express
+```sh
+npm i -S -E express@4.16.4
+```
+
+## Instalando Body Parser
+```sh
+npm i -S -E body-parser@1.18.3
+```
+
+## Instalando Consign
+Carrega arquivos javascript dinamicamente
+```sh
+npm i -S -E consign@0.1.6
+```
+
+
+## Instalando knex
+Query builder para banco de dados, convertendo objetos em querys 
+```sh
+npm i -S -E knex@0.15.2
+```
+
+### Criando arquivo de migração usando knex
+```sh
+node_modules/.bin/knex migrate:make create_users --env test
+```
+
+### Executando migração usando knex
+```sh
+node_modules/.bin/knex migrate:latest --env test
+```
+
+### Executando rollback usando knex
+```sh
+node_modules/.bin/knex migrate:rollback --env test
+```
+
+## Instalando mysql
+```sh
+npm i -S -E mysql
+```
+
+## Versionamento de biblioteca
+
+**Exemplo: v 1.2.3**
+1. major
+2. ^ minor
+3. ~ patch

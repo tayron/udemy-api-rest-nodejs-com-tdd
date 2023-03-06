@@ -1,0 +1,35 @@
+{
+  "name": "udemy-api-rest-nodejs-com-tdd",
+  "version": "1.0.0",
+  "description": "Link do curso: https://www.udemy.com/course/api-rest-nodejs-com-testes",
+  "main": "inde.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "jest",
+    "lint": "eslint src/** test/** --fix",
+    "secure-mode": "jest --watch --verbose=true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tayron/udemy-api-rest-nodejs-com-tdd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tayron/udemy-api-rest-nodejs-com-tdd/issues"
+  },
+  "homepage": "https://github.com/tayron/udemy-api-rest-nodejs-com-tdd#readme",
+  "devDependencies": {
+    "eslint": "^8.35.0",
+    "jest": "23.6.0",
+    "supertest": "3.3.0"
+  },
+  "dependencies": {
+    "body-parser": "1.18.3",
+    "consign": "0.1.6",
+    "express": "4.16.4",
+    "knex": "0.15.2",
+    "mysql": "2.18.1"
+  }
+}
