@@ -1,5 +1,7 @@
 # udemy-api-rest-nodejs-com-tdd
 API REST em Node.JS aplicando testes (TDD) desde o princípio
+Link do curso: https://www.udemy.com/course/api-rest-nodejs-com-testes
+
 
 ## O que será estudado:
 * Evoluir a aplicação com a segurança dos testes
