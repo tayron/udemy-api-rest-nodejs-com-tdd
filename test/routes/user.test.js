@@ -1,5 +1,7 @@
 const request = require('supertest');
-const app = require('../../src/app')
+const app = require('../../src/app');
+
+const email = `${Date.now()}@mail.com`
 
 describe('Usuário', () => {
   test('Deve listar todos os usuários', () => {
@@ -13,7 +15,7 @@ describe('Usuário', () => {
   test('Deve inserir um usuário com sucesso', () => {
     const user = {
       name: 'Walter Milly',
-      mail: `${Date.now()}@mail.com`,
+      mail: email,
       password: '123456'
     }
     return request(app).post('/users')
@@ -26,7 +28,7 @@ describe('Usuário', () => {
 
   test('Não deve inserir um usuário sem nome', () => {
     const user = {
-      mail: `${Date.now()}@mail.com`,
+      mail: email,
       password: '123456'
     }
 
@@ -53,7 +55,7 @@ describe('Usuário', () => {
   test('Não deve inserir um usuário sem senha', (done) => {
     const user = {
       name: 'Walter Milly',
-      mail: `${Date.now()}@mail.com`
+      mail: email
     }
     request(app).post('/users')
       .send(user)
@@ -64,6 +66,21 @@ describe('Usuário', () => {
       })
       .catch(error => {
         done.fail(error)
+      })
+  })
+
+  test('Não deve inserir um usuário com email existente', () => {
+    const user = {
+      name: 'Walter Milly',
+      mail: email,
+      password: '123456'
+    }
+
+    return request(app).post('/users')
+      .send(user)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Já existe um usuário com este email')
       })
   })
 })
