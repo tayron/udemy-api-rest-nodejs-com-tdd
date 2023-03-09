@@ -84,6 +84,11 @@ node_modules/.bin/knex migrate:latest --env test
 node_modules/.bin/knex migrate:rollback --env test
 ```
 
+## Instalando knex-logger
+```sh
+npm i -S -E knex-logger
+```
+
 ## Instalando mysql
 ```sh
 npm i -S -E mysql

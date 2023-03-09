@@ -1,12 +1,12 @@
 module.exports = {
   test: {
     client: 'mysql',
-    version: '',
+    // version: '',
     connection: {
-      host: '',
+      host: 'localhost',
       user: 'root',
-      password: '',
-      database: ''
+      password: 'yakTLS&70c52',
+      database: 'projeto'
     },
     migrations: {
       directory: 'src/migrations'

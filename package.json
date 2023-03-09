@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "test": "jest",
     "lint": "eslint src/** test/** --fix",
-    "secure-mode": "jest --watch --verbose=true"
+    "secure-mode": "jest --watch --verbose=false"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "consign": "0.1.6",
     "express": "4.16.4",
     "knex": "0.15.2",
+    "knex-logger": "0.1.0",
     "mysql": "2.18.1"
   }
 }
