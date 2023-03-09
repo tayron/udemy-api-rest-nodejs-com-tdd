@@ -6,7 +6,11 @@ module.exports = (app) => {
   };
 
   const create = async (req, res) => {
-    await app.services.user.create(req.body);
+    const result = await app.services.user.create(req.body);
+    if (result.error) {
+      return res.status(400).send(result)
+    }
+
     app.services.user.selectByMail(req.body.mail)
       .then(result => {
         const users = JSON.parse(JSON.stringify(result))

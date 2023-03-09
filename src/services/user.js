@@ -4,6 +4,10 @@ module.exports = (app) => {
   }
 
   const create = (user) => {
+    if (!user.name) return { error: 'Nome é obrigatório' }
+    if (!user.mail) return { error: 'Email é obrigatório' }
+    if (!user.password) return { error: 'Senha é obrigatória' }
+
     return app.db('users').insert(user);
   }
 
