@@ -30,4 +30,17 @@ describe.only('Account', () => {
         expect(result.body.name).toBe('ACC1')
       })
   })
+
+  test('Deve listar todas as contas', () => {
+    const account = {
+      name: 'Acc list',
+      user_id: user.id
+    }
+    return app.db('accounts').insert(account)
+      .then(() => request(app).get(MAIN_ROUTE))
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.length).toBeGreaterThan(0)
+      })
+  })
 })

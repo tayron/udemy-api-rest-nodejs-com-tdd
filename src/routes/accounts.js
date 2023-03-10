@@ -1,4 +1,9 @@
 module.exports = (app) => {
+  const findAll = (req, res) => {
+    app.services.account.findAll()
+      .then(result => res.status(200).send(result))
+  };
+
   const create = async (req, res) => {
     const result = await app.services.account.create(req.body);
     if (result.error) {
@@ -17,5 +22,5 @@ module.exports = (app) => {
     return res.status(200).send(account)
   }
 
-  return { create }
+  return { findAll, create }
 }
