@@ -1,7 +1,7 @@
 module.exports = {
   test: {
     client: 'mysql',
-    // version: '',
+    version: '5.6',
     connection: {
       host: 'localhost',
       user: 'root',

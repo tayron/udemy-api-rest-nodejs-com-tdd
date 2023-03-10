@@ -72,6 +72,7 @@ npm i -S -E knex@0.15.2
 ### Criando arquivo de migração usando knex
 ```sh
 node_modules/.bin/knex migrate:make create_users --env test
+node_modules/.bin/knex migrate:make create_table_accounts --env test
 ```
 
 ### Executando migração usando knex
