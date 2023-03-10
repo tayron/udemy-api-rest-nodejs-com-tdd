@@ -11,11 +11,14 @@ module.exports = (app) => {
       return res.status(400).send(result)
     }
 
-    app.services.user.selectByMail(req.body.mail)
-      .then(result => {
-        const users = JSON.parse(JSON.stringify(result))
-        return res.status(200).send(users[0])
-      })
+    const users = await app.services.user.findByMail(req.body.mail);
+    const user = users.length > 0 ? users[0] : null
+
+    if (!user) {
+      return res.status(400).send({ error: 'Usuário não criado' })
+    }
+
+    return res.status(200).send(user)
   };
 
   return { findAll, create }

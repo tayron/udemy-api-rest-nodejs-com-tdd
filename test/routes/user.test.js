@@ -1,24 +1,45 @@
 const request = require('supertest');
 const app = require('../../src/app');
 
+const MAIN_ROUTE = '/users'
 const email = `${Date.now()}@mail.com`
 
 describe('Usuário', () => {
   test('Deve listar todos os usuários', () => {
-    return request(app).get('/users')
+    return request(app).get(MAIN_ROUTE)
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.length).toBeGreaterThan(0);
       })
   })
 
-  test('Deve inserir um usuário com sucesso', () => {
+  test('Deve não inserir um usuário com sucesso', () => {
+
     const user = {
       name: 'Walter Milly',
       mail: email,
       password: '123456'
     }
-    return request(app).post('/users')
+
+    let spyUserCreate = jest.spyOn(app.services.user, 'create').mockImplementation(() => user);
+
+    return request(app).post(MAIN_ROUTE)
+      .send(user)
+      .then(res => {
+        expect(spyUserCreate).toHaveBeenCalled()
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Usuário não criado')
+        spyUserCreate.mockRestore();
+      })
+  })
+
+  test('Deve inserir um usuário', () => {
+    const user = {
+      name: 'Walter Milly',
+      mail: email,
+      password: '123456'
+    }
+    return request(app).post(MAIN_ROUTE)
       .send(user)
       .then(res => {
         expect(res.status).toBe(200);
@@ -32,7 +53,7 @@ describe('Usuário', () => {
       password: '123456'
     }
 
-    return request(app).post('/users')
+    return request(app).post(MAIN_ROUTE)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400);
@@ -45,7 +66,7 @@ describe('Usuário', () => {
       name: 'Walter Milly',
       password: '123456'
     }
-    const result = await request(app).post('/users')
+    const result = await request(app).post(MAIN_ROUTE)
       .send(user)
 
     expect(result.status).toBe(400)
@@ -57,7 +78,7 @@ describe('Usuário', () => {
       name: 'Walter Milly',
       mail: email
     }
-    request(app).post('/users')
+    request(app).post(MAIN_ROUTE)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400)
@@ -76,7 +97,7 @@ describe('Usuário', () => {
       password: '123456'
     }
 
-    return request(app).post('/users')
+    return request(app).post(MAIN_ROUTE)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400);

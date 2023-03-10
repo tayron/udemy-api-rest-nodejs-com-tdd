@@ -8,15 +8,16 @@ module.exports = (app) => {
     if (!user.mail) return { error: 'Email é obrigatório' }
     if (!user.password) return { error: 'Senha é obrigatória' }
 
-    const userCreated = await selectByMail(user.mail)
+    const userCreated = await findByMail(user.mail)
     if (userCreated.length > 0) return { error: 'Já existe um usuário com este email' }
 
     return app.db('users').insert(user);
   }
 
-  const selectByMail = (mail) => {
-    return app.db('users').select().where('mail', mail)
+  const findByMail = async (mail) => {
+    const users = await app.db('users').select().where('mail', mail);
+    return JSON.parse(JSON.stringify(users))
   }
 
-  return { findAll, create, selectByMail }
+  return { findAll, create, findByMail }
 }
