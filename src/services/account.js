@@ -1,4 +1,12 @@
 module.exports = (app) => {
+
+  const findById = async (id) => {
+    const user = await app.db('accounts').select()
+      .where({ id }).first()
+
+    return JSON.parse(JSON.stringify(user))
+  }
+
   const findAll = () => {
     return app.db('accounts').select();
   }
@@ -11,9 +19,11 @@ module.exports = (app) => {
   }
 
   const findByNameUserId = async (name, userId) => {
-    const users = await app.db('accounts').select().where({ name, user_id: userId });
+    const users = await app.db('accounts').select()
+      .where({ name, user_id: userId }).first();
+
     return JSON.parse(JSON.stringify(users))
   }
 
-  return { findAll, create, findByNameUserId }
+  return { findById, findAll, create, findByNameUserId }
 }

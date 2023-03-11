@@ -43,4 +43,27 @@ describe.only('Account', () => {
         expect(res.body.length).toBeGreaterThan(0)
       })
   })
+
+  test('Deve retornar uma conta por id', async (done) => {
+    const account = {
+      name: 'Acc by id',
+      user_id: user.id
+    }
+
+    await app.db('accounts').insert(account)
+
+    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    if (!accountCreated) {
+      done.fail()
+    }
+
+    await request(app).get(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.name).toBe(account.name)
+        expect(res.body.user_id).toBe(account.user_id)
+        done()
+      })
+
+  })
 })
