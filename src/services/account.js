@@ -1,4 +1,10 @@
 module.exports = (app) => {
+  const remove = async (id) => {
+    return app.db('accounts').delete().where({ id });
+  }
+  const update = async (id, account) => {
+    return app.db('accounts').update(account).where({ id });
+  }
 
   const findById = async (id) => {
     const user = await app.db('accounts').select()
@@ -11,11 +17,11 @@ module.exports = (app) => {
     return app.db('accounts').select();
   }
 
-  const create = async (user) => {
-    if (!user.name) return { error: 'Nome é obrigatório' }
-    if (!user.user_id) return { error: 'Usuário é obrigatório' }
+  const create = async (account) => {
+    if (!account.name) return { error: 'Nome é obrigatório' }
+    if (!account.user_id) return { error: 'Usuário é obrigatório' }
 
-    return app.db('accounts').insert(user);
+    return app.db('accounts').insert(account);
   }
 
   const findByNameUserId = async (name, userId) => {
@@ -25,5 +31,5 @@ module.exports = (app) => {
     return JSON.parse(JSON.stringify(users))
   }
 
-  return { findById, findAll, create, findByNameUserId }
+  return { remove, update, findById, findAll, create, findByNameUserId }
 }

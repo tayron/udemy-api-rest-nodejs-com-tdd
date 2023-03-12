@@ -64,6 +64,50 @@ describe.only('Account', () => {
         expect(res.body.user_id).toBe(account.user_id)
         done()
       })
+  })
 
+  test('Deve alterar uma conta', async (done) => {
+    const account = {
+      name: 'Acc by put',
+      user_id: user.id
+    }
+
+    await app.db('accounts').insert(account)
+
+    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    if (!accountCreated) {
+      done.fail()
+    }
+
+    const newName = 'Acc by put updated'
+
+    await request(app).patch(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .send({ name: newName })
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.name).toBe(newName)
+        expect(res.body.user_id).toBe(account.user_id)
+        done()
+      })
+  })
+
+  test('Deve remover uma conta', async (done) => {
+    const account = {
+      name: 'Acc by delete',
+      user_id: user.id
+    }
+
+    await app.db('accounts').insert(account)
+
+    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    if (!accountCreated) {
+      done.fail()
+    }
+
+    await request(app).delete(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .then(res => {
+        expect(res.status).toBe(204)
+        done()
+      })
   })
 })
