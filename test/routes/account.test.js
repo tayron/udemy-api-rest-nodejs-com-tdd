@@ -1,6 +1,5 @@
 const request = require('supertest')
 const app = require('../../src/app');
-const { RuleTester } = require('eslint');
 
 const MAIN_ROUTE = '/accounts'
 let user;
@@ -14,8 +13,7 @@ describe.only('Account', () => {
       password: '123456'
     })
 
-    const users = await app.services.user.findByMail(mail)
-    user = users.length > 0 ? users[0] : null
+    user = await app.services.user.findByMail(mail)
   })
 
   test('Deve inserir uma conta com sucesso', () => {

@@ -95,9 +95,14 @@ npm i -S -E knex-logger
 npm i -S -E mysql
 ```
 
-## Instalando bcrypt
+## Instalando bcrypt para geração de hash de senha
 ```sh
 npm i -S -E bcrypt-nodejs@0.0.3
+```
+
+## Instalando jwt para geração de token
+```sh
+npm i -S -E jwt-simple@0.5.5
 ```
 
 ## Versionamento de biblioteca

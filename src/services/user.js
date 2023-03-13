@@ -17,7 +17,7 @@ module.exports = (app) => {
     if (!user.password) throw new ValidationError('Senha é obrigatória')
 
     const userCreated = await findByMail(user.mail)
-    if (userCreated.length > 0)
+    if (userCreated)
       throw new ValidationError('Já existe um usuário com este email')
 
     user.password = createPasswordHash(user.password)
@@ -25,21 +25,31 @@ module.exports = (app) => {
   }
 
   const findByMail = async (mail) => {
-    const users = await app.db('users')
+    const user = await app.db('users')
       .select(['id', 'name', 'mail'])
-      .where('mail', mail);
+      .where('mail', mail)
+      .first();
 
-    return JSON.parse(JSON.stringify(users))
+    return user ? JSON.parse(JSON.stringify(user)) : null
+  }
+
+  const getPasswordByMail = async (mail) => {
+    const user = await app.db('users')
+      .select(['password'])
+      .where('mail', mail)
+      .first();
+
+    return user ? JSON.parse(JSON.stringify(user)) : null
   }
 
   const findById = async (id) => {
-    const users = await app.db('users')
+    const user = await app.db('users')
       .select()
       .where('id', id)
       .first();
 
-    return JSON.parse(JSON.stringify(users))
+    return user ? JSON.parse(JSON.stringify(user)) : null
   }
 
-  return { findAll, create, findByMail, findById }
+  return { findAll, create, findByMail, findById, getPasswordByMail }
 }

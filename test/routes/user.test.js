@@ -48,7 +48,7 @@ describe('Usuário', () => {
       })
   })
 
-  test('Deve  armazenar senha criptografada', async () => {
+  test('Deve armazenar senha criptografada', async () => {
 
     const user = {
       name: 'Walter Milly',

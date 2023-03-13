@@ -9,10 +9,10 @@ module.exports = (app) => {
   }
 
   const findById = async (id) => {
-    const user = await app.db('accounts').select()
+    const account = await app.db('accounts').select()
       .where({ id }).first()
 
-    return JSON.parse(JSON.stringify(user))
+    return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
   const findAll = async () => {
@@ -27,10 +27,10 @@ module.exports = (app) => {
   }
 
   const findByNameUserId = async (name, userId) => {
-    const users = await app.db('accounts').select()
+    const account = await app.db('accounts').select()
       .where({ name, user_id: userId }).first();
 
-    return JSON.parse(JSON.stringify(users))
+    return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
   return { remove, update, findById, findAll, create, findByNameUserId }

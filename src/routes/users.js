@@ -14,13 +14,13 @@ module.exports = (app) => {
     try {
       await app.services.user.create(req.body);
 
-      const users = await app.services.user.findByMail(req.body.mail);
+      const user = await app.services.user.findByMail(req.body.mail);
 
-      if (!users || users.length === 0) {
+      if (!user) {
         throw new ValidationError('Usuário não criado')
       }
 
-      return res.status(200).send(users[0])
+      return res.status(200).send(user)
     } catch (err) {
       next(err)
     }
