@@ -44,7 +44,28 @@ describe('Usuário', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.name).toBe(user.name)
+        expect(res.body).not.toHaveProperty('password')
       })
+  })
+
+  test('Deve  armazenar senha criptografada', async () => {
+
+    const user = {
+      name: 'Walter Milly',
+      mail: `${Date.now()}@mail.com`,
+      password: '123456'
+    }
+
+    const res = await request(app).post(MAIN_ROUTE)
+      .send(user)
+
+    expect(res.status).toBe(200)
+
+    const { id } = res.body;
+    const userCreated = await app.services.user.findById(id)
+    expect(userCreated.password).toBeDefined();
+    expect(userCreated.password).not.toBe(user.password)
+
   })
 
   test('Não deve inserir um usuário sem nome', () => {

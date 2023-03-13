@@ -95,6 +95,11 @@ npm i -S -E knex-logger
 npm i -S -E mysql
 ```
 
+## Instalando bcrypt
+```sh
+npm i -S -E bcrypt-nodejs@0.0.3
+```
+
 ## Versionamento de biblioteca
 
 **Exemplo: v 1.2.3**
