@@ -1,3 +1,5 @@
+const ValidationError = require('../erros/ValidationError')
+
 module.exports = (app) => {
   const remove = async (req, res) => {
     const result = await app.services.account.remove(req.params.id);
@@ -9,19 +11,22 @@ module.exports = (app) => {
   }
 
   const update = async (req, res) => {
-    const result = await app.services.account.update(req.params.id, req.body);
-    if (result.error) {
-      return res.status(400).send(result)
+    try {
+      await app.services.account.update(req.params.id, req.body);
+
+      const account = await app.services.account
+        .findById(req.params.id);
+
+      if (!account) {
+        throw new ValidationError('Conta não existe')
+      }
+
+      return res.status(200).send(account)
+    } catch (err) {
+      return res.status(400).send({
+        error: err.message
+      })
     }
-
-    const account = await app.services.account
-      .findById(req.params.id);
-
-    if (!account) {
-      return res.status(400).send({ error: 'Conta não existe' })
-    }
-
-    return res.status(200).send(account)
   }
 
   const findById = (req, res) => {
@@ -35,19 +40,22 @@ module.exports = (app) => {
   };
 
   const create = async (req, res) => {
-    const result = await app.services.account.create(req.body);
-    if (result.error) {
-      return res.status(400).send(result)
+    try {
+      await app.services.account.create(req.body);
+
+      const account = await app.services.account
+        .findByNameUserId(req.body.name, req.body.user_id);
+
+      if (!account) {
+        throw new ValidationError('Conta não criada')
+      }
+
+      return res.status(200).send(account)
+    } catch (err) {
+      return res.status(400).send({
+        error: err.message
+      })
     }
-
-    const account = await app.services.account
-      .findByNameUserId(req.body.name, req.body.user_id);
-
-    if (!account) {
-      return res.status(400).send({ error: 'Conta não criada' })
-    }
-
-    return res.status(200).send(account)
   }
 
   return { remove, update, findById, findAll, create }

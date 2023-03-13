@@ -1,3 +1,5 @@
+const ValidationError = require('../erros/ValidationError')
+
 module.exports = (app) => {
   const remove = async (id) => {
     return app.db('accounts').delete().where({ id });
@@ -18,8 +20,8 @@ module.exports = (app) => {
   }
 
   const create = async (account) => {
-    if (!account.name) return { error: 'Nome é obrigatório' }
-    if (!account.user_id) return { error: 'Usuário é obrigatório' }
+    if (!account.name) throw new ValidationError('Nome é obrigatório')
+    if (!account.user_id) throw new ValidationError('Usuário é obrigatório')
 
     return app.db('accounts').insert(account);
   }

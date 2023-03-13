@@ -1,5 +1,6 @@
 const request = require('supertest')
-const app = require('../../src/app')
+const app = require('../../src/app');
+const { RuleTester } = require('eslint');
 
 const MAIN_ROUTE = '/accounts'
 let user;
@@ -31,6 +32,21 @@ describe.only('Account', () => {
       })
   })
 
+  test('Não deve inserir uma conta sem nome', () => {
+    const account = {
+      user_id: user.id
+    }
+
+    return request(app).post(MAIN_ROUTE)
+      .send(account)
+      .then(result => {
+        expect(result.status).toBe(400)
+        expect(result.body.error).toBe('Nome é obrigatório')
+      })
+  })
+
+  test.skip('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () => { })
+
   test('Deve listar todas as contas', () => {
     const account = {
       name: 'Acc list',
@@ -43,6 +59,8 @@ describe.only('Account', () => {
         expect(res.body.length).toBeGreaterThan(0)
       })
   })
+
+  test.skip('Deve listar apenas as contas do usuário', () => { })
 
   test('Deve retornar uma conta por id', async (done) => {
     const account = {
@@ -65,6 +83,8 @@ describe.only('Account', () => {
         done()
       })
   })
+
+  test.skip('Não deve retornar uma conta de outro usuário', () => { })
 
   test('Deve alterar uma conta', async (done) => {
     const account = {
@@ -91,6 +111,8 @@ describe.only('Account', () => {
       })
   })
 
+  test.skip('Não deve alterar uma conta de outro usuário', () => { })
+
   test('Deve remover uma conta', async (done) => {
     const account = {
       name: 'Acc by delete',
@@ -110,4 +132,6 @@ describe.only('Account', () => {
         done()
       })
   })
+
+  test.skip('Não deve remover uma conta de outro usuário', () => { })
 })

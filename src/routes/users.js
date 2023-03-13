@@ -1,3 +1,4 @@
+const ValidationError = require('../erros/ValidationError')
 
 module.exports = (app) => {
   const findAll = (req, res) => {
@@ -6,19 +7,21 @@ module.exports = (app) => {
   };
 
   const create = async (req, res) => {
-    const result = await app.services.user.create(req.body);
-    if (result.error) {
-      return res.status(400).send(result)
+    try {
+      await app.services.user.create(req.body);
+
+      const users = await app.services.user.findByMail(req.body.mail);
+
+      if (!users || users.length === 0) {
+        throw new ValidationError('Usuário não criado')
+      }
+
+      return res.status(200).send(users[0])
+    } catch (err) {
+      return res.status(400).send({
+        error: err.message
+      })
     }
-
-    const users = await app.services.user.findByMail(req.body.mail);
-    const user = users.length > 0 ? users[0] : null
-
-    if (!user) {
-      return res.status(400).send({ error: 'Usuário não criado' })
-    }
-
-    return res.status(200).send(user)
   };
 
   return { findAll, create }
