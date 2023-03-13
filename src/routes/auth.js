@@ -9,11 +9,7 @@ module.exports = (app) => {
       const user = await app.services.user
         .getPasswordByMail(req.body.mail)
 
-      if (!user) {
-        throw new ValidationError('Usuário não encontrado')
-      }
-
-      if (!bcrypt.compareSync(req.body.password, user.password)) {
+      if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
         throw new ValidationError('Usuário ou senha inválido')
       }
 
