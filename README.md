@@ -105,6 +105,12 @@ npm i -S -E bcrypt-nodejs@0.0.3
 npm i -S -E jwt-simple@0.5.5
 ```
 
+## Instalando passport
+```sh
+npm i -S -E passport@0.4.0
+npm i -S -E passport-jwt@4.0.0
+```
+
 ## Versionamento de biblioteca
 
 **Exemplo: v 1.2.3**
