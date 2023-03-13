@@ -15,7 +15,7 @@ module.exports = (app) => {
     return JSON.parse(JSON.stringify(user))
   }
 
-  const findAll = () => {
+  const findAll = async () => {
     return app.db('accounts').select();
   }
 

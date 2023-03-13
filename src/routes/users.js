@@ -1,12 +1,16 @@
 const ValidationError = require('../erros/ValidationError')
 
 module.exports = (app) => {
-  const findAll = (req, res) => {
-    app.services.user.findAll()
-      .then(result => res.status(200).send(result))
+  const findAll = async (req, res, next) => {
+    try {
+      await app.services.user.findAll()
+        .then(result => res.status(200).send(result))
+    } catch (err) {
+      next(err)
+    }
   };
 
-  const create = async (req, res) => {
+  const create = async (req, res, next) => {
     try {
       await app.services.user.create(req.body);
 
@@ -18,9 +22,7 @@ module.exports = (app) => {
 
       return res.status(200).send(users[0])
     } catch (err) {
-      return res.status(400).send({
-        error: err.message
-      })
+      next(err)
     }
   };
 

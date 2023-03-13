@@ -1,7 +1,7 @@
 const ValidationError = require('../erros/ValidationError')
 
 module.exports = (app) => {
-  const findAll = () => {
+  const findAll = async () => {
     return app.db('users').select();
   }
 

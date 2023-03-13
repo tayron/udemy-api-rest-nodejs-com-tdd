@@ -2,13 +2,9 @@ const app = require('express')();
 const consign = require('consign');
 const knex = require('knex');
 const knexfile = require('../knexfile');
-const knexLogger = require('knex-logger')
 
 // TODO criar chaveamento dinamico
 app.db = knex(knexfile.test)
-
-// Tem que desabilitar modo verboso do jest
-app.use(knexLogger(app.db))
 
 consign({ cwd: 'src', verbose: false })
   .include('./config/middlewares.js')
@@ -20,6 +16,15 @@ consign({ cwd: 'src', verbose: false })
 app.get('/', (req, res) => {
   res.status(200).send()
 });
+
+app.use((err, req, res, next) => {
+  const { name, message, stack } = err;
+  if (name === 'ValidationError')
+    res.status(400).json({ error: message })
+
+  res.status(500).json({ name, message, stack })
+  next(err)
+})
 
 
 /*

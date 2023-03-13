@@ -1,16 +1,16 @@
 const ValidationError = require('../erros/ValidationError')
 
 module.exports = (app) => {
-  const remove = async (req, res) => {
-    const result = await app.services.account.remove(req.params.id);
-    if (result.error) {
-      return res.status(400).send(result)
+  const remove = async (req, res, next) => {
+    try {
+      await app.services.account.remove(req.params.id)
+      return res.status(204).send()
+    } catch (err) {
+      next(err)
     }
-
-    return res.status(204).send()
   }
 
-  const update = async (req, res) => {
+  const update = async (req, res, next) => {
     try {
       await app.services.account.update(req.params.id, req.body);
 
@@ -23,23 +23,29 @@ module.exports = (app) => {
 
       return res.status(200).send(account)
     } catch (err) {
-      return res.status(400).send({
-        error: err.message
-      })
+      next(err)
     }
   }
 
-  const findById = (req, res) => {
-    app.services.account.findById(req.params.id)
-      .then(result => res.status(200).send(result))
+  const findById = async (req, res, next) => {
+    try {
+      await app.services.account.findById(req.params.id)
+        .then(result => res.status(200).send(result))
+    } catch (err) {
+      next(err)
+    }
   }
 
-  const findAll = (req, res) => {
-    app.services.account.findAll()
-      .then(result => res.status(200).send(result))
+  const findAll = async (req, res, next) => {
+    try {
+      await app.services.account.findAll()
+        .then(result => res.status(200).send(result))
+    } catch (err) {
+      return next(err)
+    }
   };
 
-  const create = async (req, res) => {
+  const create = async (req, res, next) => {
     try {
       await app.services.account.create(req.body);
 
@@ -52,9 +58,7 @@ module.exports = (app) => {
 
       return res.status(200).send(account)
     } catch (err) {
-      return res.status(400).send({
-        error: err.message
-      })
+      next(err)
     }
   }
 
