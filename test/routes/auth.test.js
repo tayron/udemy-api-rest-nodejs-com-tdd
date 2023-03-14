@@ -4,6 +4,24 @@ const app = require('../../src/app');
 const MAIN_ROUTE = '/auth'
 
 describe('Auth', () => {
+  test('Deve criar usuário via signup', () => {
+    const user = {
+      name: 'Usuario criado via signup',
+      mail: `${Date.now()}@mail.com`,
+      password: '123456'
+    }
+
+    return request(app).post(`${MAIN_ROUTE}/signup`)
+      .send(user)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.name).toBe(user.name)
+        expect(res.body).toHaveProperty('mail')
+        expect(res.body).not.toHaveProperty('senha')
+      })
+  })
+
+
   test('Deve receber token ao logar', () => {
     const user = {
       name: 'Usuario senha coreta',
