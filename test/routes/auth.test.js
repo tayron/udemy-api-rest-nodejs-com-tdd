@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../src/app');
 
 const MAIN_ROUTE = '/auth'
+const USER_ROUTE = '/v1/users'
 
 describe('Auth', () => {
   test('Deve criar usuário via signup', () => {
@@ -85,7 +86,7 @@ describe('Auth', () => {
   })
 
   test('Não deve acessar uma rota protegida sem token', () => {
-    return request(app).get('/users')
+    return request(app).get(USER_ROUTE)
       .then(res => {
         expect(res.status).toBe(401)
       })

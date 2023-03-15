@@ -2,7 +2,7 @@ const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
-const MAIN_ROUTE = '/users'
+const MAIN_ROUTE = '/v1/users'
 const TOKEN_SECRET = 'Segredo'
 const EMAIL = `${Date.now()}@mail.com`
 

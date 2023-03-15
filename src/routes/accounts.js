@@ -1,16 +1,19 @@
+const express = require('express')
 const ValidationError = require('../erros/ValidationError')
 
 module.exports = (app) => {
-  const remove = async (req, res, next) => {
+  const router = express.Router()
+
+  router.delete('/:id', async (req, res, next) => {
     try {
       await app.services.account.remove(req.params.id)
       return res.status(204).send()
     } catch (err) {
       next(err)
     }
-  }
+  })
 
-  const update = async (req, res, next) => {
+  router.patch('/:id', async (req, res, next) => {
     try {
       await app.services.account.update(req.params.id, req.body);
 
@@ -25,27 +28,27 @@ module.exports = (app) => {
     } catch (err) {
       next(err)
     }
-  }
+  })
 
-  const findById = async (req, res, next) => {
+  router.get('/:id', async (req, res, next) => {
     try {
       await app.services.account.findById(req.params.id)
         .then(result => res.status(200).send(result))
     } catch (err) {
       next(err)
     }
-  }
+  })
 
-  const findAll = async (req, res, next) => {
+  router.get('/', async (req, res, next) => {
     try {
       await app.services.account.findAll()
         .then(result => res.status(200).send(result))
     } catch (err) {
       return next(err)
     }
-  };
+  });
 
-  const create = async (req, res, next) => {
+  router.post('/', async (req, res, next) => {
     try {
       await app.services.account.create(req.body);
 
@@ -60,7 +63,7 @@ module.exports = (app) => {
     } catch (err) {
       next(err)
     }
-  }
+  });
 
-  return { remove, update, findById, findAll, create }
+  return router
 }

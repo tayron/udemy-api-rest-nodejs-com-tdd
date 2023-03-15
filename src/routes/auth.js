@@ -1,10 +1,13 @@
+const express = require('express')
 const jwt = require('jwt-simple');
 const ValidationError = require('../erros/ValidationError');
 const bcrypt = require('bcrypt-nodejs')
 const TOKEN_SECRET = 'Segredo'
 
 module.exports = (app) => {
-  const signin = async (req, res, next) => {
+  const router = express.Router()
+
+  router.post('/signin', async (req, res, next) => {
     try {
       const user = await app.services.user
         .getPasswordByMail(req.body.mail)
@@ -24,7 +27,23 @@ module.exports = (app) => {
     } catch (err) {
       next(err)
     }
-  };
+  });
 
-  return { signin }
+  router.post('/signup', async (req, res, next) => {
+    try {
+      await app.services.user.create(req.body);
+
+      const user = await app.services.user.findByMail(req.body.mail);
+
+      if (!user) {
+        throw new ValidationError('Usuário não criado')
+      }
+
+      return res.status(200).send(user)
+    } catch (err) {
+      next(err)
+    }
+  })
+
+  return router
 }

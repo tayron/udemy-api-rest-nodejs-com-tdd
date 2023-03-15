@@ -3,7 +3,7 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
 const TOKEN_SECRET = 'Segredo'
-const MAIN_ROUTE = '/accounts'
+const MAIN_ROUTE = '/v1/accounts'
 let userAdmin;
 
 describe.only('Account', () => {
