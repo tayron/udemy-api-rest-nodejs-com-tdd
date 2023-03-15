@@ -1,12 +1,29 @@
 const request = require('supertest');
+const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
 const MAIN_ROUTE = '/users'
-const email = `${Date.now()}@mail.com`
+const TOKEN_SECRET = 'Segredo'
+const EMAIL = `${Date.now()}@mail.com`
+
+let userAdmin;
 
 describe('Usuário', () => {
+  beforeAll(async () => {
+    await app.services.user.create({
+      name: 'Admin',
+      mail: EMAIL,
+      password: '123456'
+    })
+
+    userAdmin = await app.services.user.findByMail(EMAIL)
+    userAdmin.token = token = jwt.encode(userAdmin, TOKEN_SECRET)
+  })
+
+
   test('Deve listar todos os usuários', () => {
     return request(app).get(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.length).toBeGreaterThan(0);
@@ -17,15 +34,17 @@ describe('Usuário', () => {
 
     const user = {
       name: 'Walter Milly',
-      mail: email,
+      mail: `${Date.now()}@mail.com`,
       password: '123456'
     }
 
-    let spyUserCreate = jest.spyOn(app.services.user, 'create').mockImplementation(() => user);
+    let spyUserCreate = jest.spyOn(app.services.user, 'create').mockImplementation(() => null);
 
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
+        console.error(res.body)
         expect(spyUserCreate).toHaveBeenCalled()
         expect(res.status).toBe(400);
         expect(res.body.error).toBe('Usuário não criado')
@@ -36,10 +55,11 @@ describe('Usuário', () => {
   test('Deve inserir um usuário', () => {
     const user = {
       name: 'Walter Milly',
-      mail: email,
+      mail: `${Date.now()}@mail.com`,
       password: '123456'
     }
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
         expect(res.status).toBe(200);
@@ -57,6 +77,7 @@ describe('Usuário', () => {
     }
 
     const res = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
 
     expect(res.status).toBe(200)
@@ -70,11 +91,12 @@ describe('Usuário', () => {
 
   test('Não deve inserir um usuário sem nome', () => {
     const user = {
-      mail: email,
+      mail: EMAIL,
       password: '123456'
     }
 
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400);
@@ -88,6 +110,7 @@ describe('Usuário', () => {
       password: '123456'
     }
     const result = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
 
     expect(result.status).toBe(400)
@@ -97,9 +120,10 @@ describe('Usuário', () => {
   test('Não deve inserir um usuário sem senha', (done) => {
     const user = {
       name: 'Walter Milly',
-      mail: email
+      mail: EMAIL
     }
     request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400)
@@ -114,11 +138,12 @@ describe('Usuário', () => {
   test('Não deve inserir um usuário com email existente', () => {
     const user = {
       name: 'Walter Milly',
-      mail: email,
+      mail: EMAIL,
       password: '123456'
     }
 
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
         expect(res.status).toBe(400);

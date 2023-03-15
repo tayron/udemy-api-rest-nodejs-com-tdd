@@ -1,28 +1,32 @@
 const request = require('supertest')
+const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
+const TOKEN_SECRET = 'Segredo'
 const MAIN_ROUTE = '/accounts'
-let user;
+let userAdmin;
 
 describe.only('Account', () => {
   beforeAll(async () => {
     const mail = `${Date.now()}@mail.com`
     await app.services.user.create({
-      name: 'User Account',
+      name: 'Admin',
       mail: mail,
       password: '123456'
     })
 
-    user = await app.services.user.findByMail(mail)
+    userAdmin = await app.services.user.findByMail(mail)
+    userAdmin.token = token = jwt.encode(userAdmin, TOKEN_SECRET)
   })
 
   test('Deve inserir uma conta com sucesso', () => {
     const account = {
       name: 'ACC1',
-      user_id: user.id
+      user_id: userAdmin.id
     }
 
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(account)
       .then(result => {
         expect(result.status).toBe(200)
@@ -32,10 +36,11 @@ describe.only('Account', () => {
 
   test('Não deve inserir uma conta sem nome', () => {
     const account = {
-      user_id: user.id
+      user_id: userAdmin.id
     }
 
     return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send(account)
       .then(result => {
         expect(result.status).toBe(400)
@@ -48,10 +53,11 @@ describe.only('Account', () => {
   test('Deve listar todas as contas', () => {
     const account = {
       name: 'Acc list',
-      user_id: user.id
+      user_id: userAdmin.id
     }
     return app.db('accounts').insert(account)
-      .then(() => request(app).get(MAIN_ROUTE))
+      .then(() => request(app).get(MAIN_ROUTE)
+        .set('authorization', `bearer ${userAdmin.token}`))
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body.length).toBeGreaterThan(0)
@@ -63,17 +69,20 @@ describe.only('Account', () => {
   test('Deve retornar uma conta por id', async (done) => {
     const account = {
       name: 'Acc by id',
-      user_id: user.id
+      user_id: userAdmin.id
     }
 
     await app.db('accounts').insert(account)
 
-    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    const accountCreated = await app.services.account
+      .findByNameUserId(account.name, account.user_id)
+
     if (!accountCreated) {
       done.fail()
     }
 
     await request(app).get(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body.name).toBe(account.name)
@@ -87,12 +96,14 @@ describe.only('Account', () => {
   test('Deve alterar uma conta', async (done) => {
     const account = {
       name: 'Acc by put',
-      user_id: user.id
+      user_id: userAdmin.id
     }
 
     await app.db('accounts').insert(account)
 
-    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    const accountCreated = await app.services.account
+      .findByNameUserId(account.name, account.user_id)
+
     if (!accountCreated) {
       done.fail()
     }
@@ -100,6 +111,7 @@ describe.only('Account', () => {
     const newName = 'Acc by put updated'
 
     await request(app).patch(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .send({ name: newName })
       .then(res => {
         expect(res.status).toBe(200)
@@ -114,17 +126,20 @@ describe.only('Account', () => {
   test('Deve remover uma conta', async (done) => {
     const account = {
       name: 'Acc by delete',
-      user_id: user.id
+      user_id: userAdmin.id
     }
 
     await app.db('accounts').insert(account)
 
-    const accountCreated = await app.services.account.findByNameUserId(account.name, account.user_id)
+    const accountCreated = await app.services.account
+      .findByNameUserId(account.name, account.user_id)
+
     if (!accountCreated) {
       done.fail()
     }
 
     await request(app).delete(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .set('authorization', `bearer ${userAdmin.token}`)
       .then(res => {
         expect(res.status).toBe(204)
         done()
