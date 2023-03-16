@@ -41,7 +41,7 @@ module.exports = (app) => {
 
   router.get('/', async (req, res, next) => {
     try {
-      await app.services.account.findAll()
+      await app.services.account.findByUserId(req.user.id)
         .then(result => res.status(200).send(result))
     } catch (err) {
       return next(err)
@@ -50,6 +50,7 @@ module.exports = (app) => {
 
   router.post('/', async (req, res, next) => {
     try {
+      req.body.user_id = req.user.id
       await app.services.account.create(req.body);
 
       const account = await app.services.account

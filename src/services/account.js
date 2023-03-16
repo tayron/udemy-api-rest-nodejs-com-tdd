@@ -19,6 +19,13 @@ module.exports = (app) => {
     return app.db('accounts').select();
   }
 
+  const findByUserId = async (id) => {
+    const account = await app.db('accounts').select()
+      .where({ user_id: id })
+
+    return account ? JSON.parse(JSON.stringify(account)) : null
+  }
+
   const create = async (account) => {
     if (!account.name) throw new ValidationError('Nome é obrigatório')
     if (!account.user_id) throw new ValidationError('Usuário é obrigatório')
@@ -33,5 +40,5 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
-  return { remove, update, findById, findAll, create, findByNameUserId }
+  return { remove, update, findById, findAll, create, findByNameUserId, findByUserId }
 }
