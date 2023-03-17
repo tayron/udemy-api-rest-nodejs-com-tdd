@@ -33,7 +33,14 @@ module.exports = (app) => {
   router.get('/:id', async (req, res, next) => {
     try {
       await app.services.account.findById(req.params.id)
-        .then(result => res.status(200).send(result))
+        .then(result => {
+          if (result.user_id !== req.user.id) {
+            return res.status(403).send({
+              error: 'Este recurso não pertence a este usuário'
+            })
+          }
+          return res.status(200).send(result)
+        })
     } catch (err) {
       next(err)
     }
