@@ -48,7 +48,22 @@ describe.only('Account', () => {
       })
   })
 
-  test.skip('Não deve inserir uma conta de nome duplicado para o mesmo usuário', () => { })
+  test('Não deve inserir uma conta de nome duplicado para o mesmo usuário', async () => {
+    const account = {
+      name: 'Acc duplicada',
+      user_id: user1.id
+    }
+
+    await app.db('accounts').insert(account)
+
+    return request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(account)
+      .then(result => {
+        expect(result.status).toBe(400)
+        expect(result.body.error).toBe('Já existe uma conta com nome informado')
+      })
+  })
 
   test('Deve listar apenas as contas do usuário', async () => {
     await app.db('accounts').insert([

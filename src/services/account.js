@@ -30,6 +30,9 @@ module.exports = (app) => {
     if (!account.name) throw new ValidationError('Nome é obrigatório')
     if (!account.user_id) throw new ValidationError('Usuário é obrigatório')
 
+    const accountExist = await findByNameUserId(account.name, account.user_id)
+    if (accountExist) throw new ValidationError('Já existe uma conta com nome informado')
+
     return app.db('accounts').insert(account);
   }
 
