@@ -149,7 +149,25 @@ describe.only('Account', () => {
       })
   })
 
-  test.skip('Não deve alterar uma conta de outro usuário', () => { })
+  test('Não deve alterar uma conta de outro usuário', async () => {
+    const account = {
+      name: 'Acc usuário 2',
+      user_id: user2.id
+    }
+
+    await app.db('accounts').insert(account)
+    const accountCreated = await app.services.account
+      .findByNameUserId(account.name, account.user_id)
+
+    accountCreated.name = 'Acc usuário 2 updated'
+
+    const req = await request(app).patch(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(accountCreated)
+
+    expect(req.status).toBe(403)
+    expect(req.body.error).toBe('Este recurso não pertence a este usuário')
+  })
 
   test('Deve remover uma conta', async (done) => {
     const account = {

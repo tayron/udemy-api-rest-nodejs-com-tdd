@@ -1,8 +1,20 @@
 const express = require('express')
 const ValidationError = require('../erros/ValidationError')
+const RecursoIndevidoError = require('../erros/RecursoIndevidoError')
 
 module.exports = (app) => {
   const router = express.Router()
+
+  // miidleware que vai ser enviado quando id for enviado via get
+  router.param('id', async (req, res, next) => {
+    await app.services.account.findById(req.params.id)
+      .then(result => {
+        if (result.user_id !== req.user.id) {
+          throw new RecursoIndevidoError()
+        }
+        next()
+      }).catch(err => next(err))
+  })
 
   router.delete('/:id', async (req, res, next) => {
     try {
@@ -34,11 +46,6 @@ module.exports = (app) => {
     try {
       await app.services.account.findById(req.params.id)
         .then(result => {
-          if (result.user_id !== req.user.id) {
-            return res.status(403).send({
-              error: 'Este recurso não pertence a este usuário'
-            })
-          }
           return res.status(200).send(result)
         })
     } catch (err) {
