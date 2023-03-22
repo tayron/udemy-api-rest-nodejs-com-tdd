@@ -192,5 +192,27 @@ describe.only('Account', () => {
       })
   })
 
-  test.skip('Não deve remover uma conta de outro usuário', () => { })
+  test('Não deve remover uma conta de outro usuário', async (done) => {
+    const account = {
+      name: 'Acc by delete',
+      user_id: user1.id
+    }
+
+    await app.db('accounts').insert(account)
+
+    const accountCreated = await app.services.account
+      .findByNameUserId(account.name, account.user_id)
+
+    if (!accountCreated) {
+      done.fail()
+    }
+
+    await request(app).delete(`${MAIN_ROUTE}/${accountCreated.id}`)
+      .set('authorization', `bearer ${user2.token}`)
+      .then(res => {
+        expect(res.status).toBe(403)
+        expect(res.body.error).toBe('Este recurso não pertence a este usuário')
+        done()
+      })
+  })
 })
