@@ -35,5 +35,22 @@ module.exports = (app) => {
     }
   });
 
+  router.post('/', async (req, res, next) => {
+    try {
+      await app.services.transaction.create(req.body);
+
+      const transaction = await app.services.transaction
+        .findByDescriptionAccountId(req.body.description, req.body.account_id);
+
+      if (!transaction) {
+        throw new ValidationError('Transação não criada')
+      }
+
+      return res.status(200).send(transaction)
+    } catch (err) {
+      next(err)
+    }
+  })
+
   return router
 }

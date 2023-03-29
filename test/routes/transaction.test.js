@@ -54,4 +54,22 @@ describe.only('Tarnsaction', () => {
         expect(transactions[0].description).toBe('T1');
       })
   })
+
+  test('Deve inserir uma transação com sucesso', async () => {
+    const transaction = {
+      description: 'new T',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.account_id).toBe(accountUser1.id)
+      })
+  })
 })
