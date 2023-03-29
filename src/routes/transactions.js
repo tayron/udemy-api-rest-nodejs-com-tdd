@@ -7,13 +7,21 @@ module.exports = (app) => {
 
   // miidleware que vai ser enviado quando id for enviado via get
   router.param('id', async (req, res, next) => {
-    await app.services.account.findByUserId(req.user.id)
-      .then(result => {
-        if (result[0].user_id !== req.user.id) {
-          throw new RecursoIndevidoError()
-        }
-        next()
-      }).catch(err => next(err))
+    try {
+      const transaction = await app.services.transaction.findById(req.params.id)
+      if (!transaction) {
+        throw new ValidationError("Transação inexistente")
+      }
+
+      const account = await app.services.account.findById(transaction.account_id)
+      if (account.user_id !== req.user.id) {
+        throw new RecursoIndevidoError()
+      }
+
+      next()
+    } catch (err) {
+      next(err)
+    }
   })
 
   router.get('/', async (req, res, next) => {

@@ -91,28 +91,6 @@ describe.only('Transactions', () => {
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
 
-    await request(app).get(`${MAIN_ROUTE}/${transactionCreated.id}`)
-      .set('authorization', `bearer ${user1.token}`)
-      .then(res => {
-        expect(res.status).toBe(200)
-        expect(res.body.id).toBe(transactionCreated.id)
-        expect(res.body.description).toBe(transactionCreated.description)
-      })
-  })
-
-  test('Deve retornar uma transação por id', async () => {
-    const transaction = {
-      description: 'new T ID',
-      date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
-      account_id: accountUser1.id
-    }
-
-    const transactionCreated = await request(app).post(MAIN_ROUTE)
-      .set('authorization', `bearer ${user1.token}`)
-      .send(transaction)
-
     await request(app).get(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
@@ -166,6 +144,27 @@ describe.only('Transactions', () => {
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
         expect(res.status).toBe(204)
+      })
+  })
+
+  test('Não deve remover uma transação de outro usuário', async () => {
+    const transaction = {
+      description: 'new T delete',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    const transactionCreated = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    await request(app).delete(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+      .set('authorization', `bearer ${user2.token}`)
+      .then(res => {
+        expect(res.status).toBe(403)
+        expect(res.body.error).toBe('Este recurso não pertence a este usuário')
       })
   })
 })
