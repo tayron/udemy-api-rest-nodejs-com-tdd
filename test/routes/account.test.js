@@ -4,6 +4,9 @@ const app = require('../../src/app');
 
 const TOKEN_SECRET = 'Segredo'
 const MAIN_ROUTE = '/v1/accounts'
+
+const TABLE_ACCOUNTS = 'accounts'
+
 let user1
 let user2
 
@@ -54,7 +57,7 @@ describe.only('Account', () => {
       user_id: user1.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
 
     return request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${user1.token}`)
@@ -66,7 +69,7 @@ describe.only('Account', () => {
   })
 
   test('Deve listar apenas as contas do usuário', async () => {
-    await app.db('accounts').insert([
+    await app.db(TABLE_ACCOUNTS).insert([
       { name: 'Acc user #1', user_id: user1.id },
       { name: 'Acc user #2', user_id: user2.id }
     ])
@@ -85,7 +88,7 @@ describe.only('Account', () => {
       user_id: user1.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
 
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
@@ -110,7 +113,7 @@ describe.only('Account', () => {
       user_id: user2.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
@@ -127,7 +130,7 @@ describe.only('Account', () => {
       user_id: user1.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
 
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
@@ -155,7 +158,7 @@ describe.only('Account', () => {
       user_id: user2.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
@@ -175,7 +178,7 @@ describe.only('Account', () => {
       user_id: user1.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
 
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
@@ -198,7 +201,7 @@ describe.only('Account', () => {
       user_id: user1.id
     }
 
-    await app.db('accounts').insert(account)
+    await app.db(TABLE_ACCOUNTS).insert(account)
 
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)

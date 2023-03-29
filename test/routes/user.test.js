@@ -44,7 +44,6 @@ describe('Usuário', () => {
       .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
       .then(res => {
-        console.error(res.body)
         expect(spyUserCreate).toHaveBeenCalled()
         expect(res.status).toBe(400);
         expect(res.body.error).toBe('Usuário não criado')

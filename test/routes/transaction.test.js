@@ -5,19 +5,24 @@ const app = require('../../src/app');
 const TOKEN_SECRET = 'Segredo'
 const MAIN_ROUTE = '/v1/transactions'
 
+const TABLE_TRANSACTIONS = 'transactions'
+const TABLE_ACCOUNTS = 'accounts'
+const TABLE_USERS = 'users'
+
+
 let user1
 let user2
 
 let accountUser1
 let accountUser2
 
-describe.only('Tarnsaction', () => {
+describe.only('Transactions', () => {
   beforeAll(async () => {
-    await app.db('transactions').del()
-    await app.db('accounts').del()
-    await app.db('users').del()
+    await app.db(TABLE_TRANSACTIONS).del()
+    await app.db(TABLE_ACCOUNTS).del()
+    await app.db(TABLE_USERS).del()
 
-    await app.db('users').insert([
+    await app.db(TABLE_USERS).insert([
       { name: 'User #1', mail: 'user1@mail.com', password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' },
       { name: 'User #2', mail: 'user2@mail.com', password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' }
     ])
@@ -28,7 +33,7 @@ describe.only('Tarnsaction', () => {
     user2 = await app.services.user.findByMail('user2@mail.com')
     user2.token = jwt.encode(user2, TOKEN_SECRET)
 
-    await app.db('accounts').insert([
+    await app.db(TABLE_ACCOUNTS).insert([
       { name: 'Account #1', 'user_id': user1.id },
       { name: 'Account #2', 'user_id': user2.id }
     ])
@@ -43,7 +48,7 @@ describe.only('Tarnsaction', () => {
       { description: 'T2', date: new Date(), ammount: 300, type: 'SAIDA', account_id: accountUser2.id }
     ]
 
-    await app.db('transactions').insert(transactionsList)
+    await app.db(TABLE_TRANSACTIONS).insert(transactionsList)
 
     return request(app).get(MAIN_ROUTE)
       .set('authorization', `bearer ${user1.token}`)
@@ -71,5 +76,9 @@ describe.only('Tarnsaction', () => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
       })
+  })
+
+  test('Deve retornar uma transação por id', async () => {
+    return app.db(TABLE_TRANSACTIONS)
   })
 })
