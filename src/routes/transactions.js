@@ -80,5 +80,14 @@ module.exports = (app) => {
     }
   })
 
+  router.delete('/:id', async (req, res, next) => {
+    try {
+      await app.services.transaction.remove(req.params.id)
+      return res.status(204).send()
+    } catch (err) {
+      next(err)
+    }
+  })
+
   return router
 }

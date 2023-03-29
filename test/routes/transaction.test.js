@@ -148,4 +148,24 @@ describe.only('Transactions', () => {
         expect(res.body.description).toBe(transactionToupdate.description)
       })
   })
+
+  test('Deve remover uma transação', async () => {
+    const transaction = {
+      description: 'new T delete',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    const transactionCreated = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    await request(app).delete(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .then(res => {
+        expect(res.status).toBe(204)
+      })
+  })
 })
