@@ -1,26 +1,28 @@
 const ValidationError = require('../erros/ValidationError')
 
+const TABLE_NAME = 'accounts'
+
 module.exports = (app) => {
   const remove = async (id) => {
-    return app.db('accounts').delete().where({ id });
+    return app.db(TABLE_NAME).delete().where({ id });
   }
   const update = async (id, account) => {
-    return app.db('accounts').update(account).where({ id });
+    return app.db(TABLE_NAME).update(account).where({ id });
   }
 
   const findById = async (id) => {
-    const account = await app.db('accounts').select()
+    const account = await app.db(TABLE_NAME).select()
       .where({ id }).first()
 
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
   const findAll = async () => {
-    return app.db('accounts').select();
+    return app.db(TABLE_NAME).select();
   }
 
   const findByUserId = async (id) => {
-    const account = await app.db('accounts').select()
+    const account = await app.db(TABLE_NAME).select()
       .where({ user_id: id })
 
     return account ? JSON.parse(JSON.stringify(account)) : null
@@ -33,11 +35,11 @@ module.exports = (app) => {
     const accountExist = await findByNameUserId(account.name, account.user_id)
     if (accountExist) throw new ValidationError('Já existe uma conta com nome informado')
 
-    return app.db('accounts').insert(account);
+    return app.db(TABLE_NAME).insert(account);
   }
 
   const findByNameUserId = async (name, userId) => {
-    const account = await app.db('accounts').select()
+    const account = await app.db(TABLE_NAME).select()
       .where({ name, user_id: userId }).first();
 
     return account ? JSON.parse(JSON.stringify(account)) : null

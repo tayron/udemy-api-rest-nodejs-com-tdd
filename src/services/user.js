@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt-nodejs')
 const ValidationError = require('../erros/ValidationError')
 
+const TABLE_NAME = 'users'
+
 module.exports = (app) => {
   const createPasswordHash = (password) => {
     const salt = bcrypt.genSaltSync(10)
@@ -8,7 +10,7 @@ module.exports = (app) => {
   }
 
   const findAll = async () => {
-    return app.db('users').select(['id', 'name', 'mail']);
+    return app.db(TABLE_NAME).select(['id', 'name', 'mail']);
   }
 
   const create = async (user) => {
@@ -21,11 +23,11 @@ module.exports = (app) => {
       throw new ValidationError('Já existe um usuário com este email')
 
     user.password = createPasswordHash(user.password)
-    return app.db('users').insert(user);
+    return app.db(TABLE_NAME).insert(user);
   }
 
   const findByMail = async (mail) => {
-    const user = await app.db('users')
+    const user = await app.db(TABLE_NAME)
       .select(['id', 'name', 'mail'])
       .where('mail', mail)
       .first();
@@ -34,7 +36,7 @@ module.exports = (app) => {
   }
 
   const getPasswordByMail = async (mail) => {
-    const user = await app.db('users')
+    const user = await app.db(TABLE_NAME)
       .select(['password'])
       .where('mail', mail)
       .first();
@@ -43,7 +45,7 @@ module.exports = (app) => {
   }
 
   const findById = async (id) => {
-    const user = await app.db('users')
+    const user = await app.db(TABLE_NAME)
       .select()
       .where('id', id)
       .first();
