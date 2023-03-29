@@ -79,6 +79,24 @@ describe.only('Transactions', () => {
   })
 
   test('Deve retornar uma transação por id', async () => {
-    return app.db(TABLE_TRANSACTIONS)
+    const transaction = {
+      description: 'new T ID',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    const transactionCreated = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    await request(app).get(`${MAIN_ROUTE}/${transactionCreated.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.id).toBe(transactionCreated.id)
+        expect(res.body.description).toBe(transactionCreated.description)
+      })
   })
 })

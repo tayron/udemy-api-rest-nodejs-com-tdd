@@ -27,5 +27,12 @@ module.exports = (app) => {
     return transaction ? JSON.parse(JSON.stringify(transaction)) : null
   }
 
-  return { findByAccountId, create, findByDescriptionAccountId }
+  const findById = async (id) => {
+    const account = await app.db(TABLE_NAME).select()
+      .where({ id }).first()
+
+    return account ? JSON.parse(JSON.stringify(account)) : null
+  }
+
+  return { findByAccountId, create, findByDescriptionAccountId, findById }
 }
