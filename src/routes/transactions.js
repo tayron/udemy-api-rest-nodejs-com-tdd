@@ -63,5 +63,22 @@ module.exports = (app) => {
     }
   })
 
+  router.patch('/:id', async (req, res, next) => {
+    try {
+      await app.services.transaction.update(req.params.id, req.body);
+
+      const transaction = await app.services.transaction
+        .findById(req.params.id);
+
+      if (!transaction) {
+        throw new ValidationError('Conta não existe')
+      }
+
+      return res.status(200).send(transaction)
+    } catch (err) {
+      next(err)
+    }
+  })
+
   return router
 }

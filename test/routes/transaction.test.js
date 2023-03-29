@@ -99,4 +99,53 @@ describe.only('Transactions', () => {
         expect(res.body.description).toBe(transactionCreated.description)
       })
   })
+
+  test('Deve retornar uma transação por id', async () => {
+    const transaction = {
+      description: 'new T ID',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    const transactionCreated = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    await request(app).get(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.id).toBe(transactionCreated.body.id)
+        expect(res.body.description).toBe(transactionCreated.body.description)
+      })
+  })
+
+  test('Deve alterar uma transação', async () => {
+    const transaction = {
+      description: 'new T ID',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    const transactionCreated = await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    const transactionToupdate = {
+      description: 'new T updated'
+    }
+
+    await request(app).patch(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transactionToupdate)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.id).toBe(transactionCreated.body.id)
+        expect(res.body.description).toBe(transactionToupdate.description)
+      })
+  })
 })

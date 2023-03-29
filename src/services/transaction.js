@@ -34,5 +34,13 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
-  return { findByAccountId, create, findByDescriptionAccountId, findById }
+  const remove = async (id) => {
+    return app.db(TABLE_NAME).delete().where({ id });
+  }
+
+  const update = async (id, account) => {
+    return app.db(TABLE_NAME).update(account).where({ id });
+  }
+
+  return { findByAccountId, create, findByDescriptionAccountId, findById, remove, update }
 }
