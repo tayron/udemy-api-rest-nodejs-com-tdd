@@ -1,6 +1,8 @@
 const ValidationError = require('../erros/ValidationError')
 
 const TABLE_NAME = 'transactions'
+const TIPO_TRANSACAO_ENTRADA = 'ENTRADA';
+const TIPO_TRANSACAO_SAIDA = 'SAIDA';
 
 module.exports = (app) => {
   const findByAccountId = async (id) => {
@@ -17,6 +19,7 @@ module.exports = (app) => {
     if (!transaction.type) throw new ValidationError('Tipo da transação é obrigatório')
     if (!transaction.account_id) throw new ValidationError('Conta referente à transação é obrigatória')
 
+    transaction = formatTransactionAmmount(transaction)
     return app.db(TABLE_NAME).insert(transaction);
   }
 
@@ -38,8 +41,21 @@ module.exports = (app) => {
     return app.db(TABLE_NAME).delete().where({ id });
   }
 
-  const update = async (id, account) => {
-    return app.db(TABLE_NAME).update(account).where({ id });
+  const update = async (id, transaction) => {
+    transaction = formatTransactionAmmount(transaction)
+    return app.db(TABLE_NAME).update(transaction).where({ id });
+  }
+
+  function formatTransactionAmmount(transaction) {
+    if (transaction.type === TIPO_TRANSACAO_ENTRADA && transaction.ammount < 0) {
+      transaction.ammount = transaction.ammount * 1
+    }
+
+    if (transaction.type === TIPO_TRANSACAO_SAIDA && transaction.ammount > 0) {
+      transaction.ammount = transaction.ammount * -1
+    }
+
+    return transaction
   }
 
   return { findByAccountId, create, findByDescriptionAccountId, findById, remove, update }
