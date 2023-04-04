@@ -98,7 +98,7 @@ describe.only('Transactions', () => {
       })
   })
 
-  test('Deve inserir transação de saída com valor negativbo', async () => {
+  test('Deve inserir transação de saída com valor negativo', async () => {
     const transaction = {
       description: 'new T SAIDA',
       date: new Date(),
@@ -114,6 +114,112 @@ describe.only('Transactions', () => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
         expect(res.body.ammount).toBe(-100)
+      })
+  })
+
+  test('Não deve inserir uma transação sem descrição', async () => {
+    const transaction = {
+      date: new Date(),
+      ammount: 100,
+      type: 'SAIDA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Descrição da transação é obrigatório');
+      })
+  })
+
+  test('Não deve inserir uma transação sem valor', async () => {
+    const transaction = {
+      description: 'new T SAIDA',
+      date: new Date(),
+      //ammount: 100,
+      type: 'SAIDA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Valor da transação é obrigatório');
+      })
+  })
+
+  test('Não deve inserir uma transação sem data', async () => {
+    const transaction = {
+      description: 'new T SAIDA',
+      ammount: 100,
+      type: 'SAIDA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Data da transação é obrigatório');
+      })
+  })
+
+  test('Não deve inserir uma transação sem conta', async () => {
+    const transaction = {
+      description: 'new T SAIDA',
+      date: new Date(),
+      ammount: 100,
+      type: 'SAIDA',
+      //account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Conta referente à transação é obrigatória');
+      })
+  })
+
+  test('Não deve inserir uma transação sem tipo', async () => {
+    const transaction = {
+      description: 'new T SAIDA',
+      date: new Date(),
+      ammount: 100,
+      // type: 'SAIDA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Tipo da transação é obrigatório');
+      })
+  })
+
+  test('Não deve inserir uma transação sem tipo inválido', async () => {
+    const transaction = {
+      description: 'new T SAIDA',
+      date: new Date(),
+      ammount: 100,
+      type: 'RETIRADA',
+      account_id: accountUser1.id
+    }
+
+    return await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe('Tipo da transação inválida');
       })
   })
 

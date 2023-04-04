@@ -16,8 +16,8 @@ module.exports = (app) => {
     if (!transaction.description) throw new ValidationError('Descrição da transação é obrigatório')
     if (!transaction.date) throw new ValidationError('Data da transação é obrigatório')
     if (!transaction.ammount) throw new ValidationError('Valor da transação é obrigatório')
-    if (!transaction.type) throw new ValidationError('Tipo da transação é obrigatório')
     if (!transaction.account_id) throw new ValidationError('Conta referente à transação é obrigatória')
+    validateTransactionType(transaction.type)
 
     transaction = formatTransactionAmmount(transaction)
     return app.db(TABLE_NAME).insert(transaction);
@@ -56,6 +56,16 @@ module.exports = (app) => {
     }
 
     return transaction
+  }
+
+  function validateTransactionType(type) {
+    if (!type) {
+      throw new ValidationError('Tipo da transação é obrigatório')
+    }
+
+    if (type !== TIPO_TRANSACAO_ENTRADA && type !== TIPO_TRANSACAO_SAIDA) {
+      throw new ValidationError('Tipo da transação inválida')
+    }
   }
 
   return { findByAccountId, create, findByDescriptionAccountId, findById, remove, update }
