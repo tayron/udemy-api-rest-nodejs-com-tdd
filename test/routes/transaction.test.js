@@ -266,7 +266,6 @@ describe('Transactions', () => {
     await request(app).delete(`${ACCOUNT_ROUTE}/${accountUser1.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
-        console.error(res.body)
         expect(res.status).toBe(400)
         expect(res.body.error).toBe('Essa conta possui transações associadas')
       })
