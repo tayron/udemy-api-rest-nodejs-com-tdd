@@ -4,6 +4,11 @@ const TABLE_NAME = 'accounts'
 
 module.exports = (app) => {
   const remove = async (id) => {
+    const transactionAssociated = await app.services.transaction.findByAccountId(id)
+    if (transactionAssociated.length > 0) {
+      throw new ValidationError('Essa conta possui transações associadas')
+    }
+
     return app.db(TABLE_NAME).delete().where({ id });
   }
 

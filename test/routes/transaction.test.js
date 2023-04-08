@@ -3,7 +3,8 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
 const TOKEN_SECRET = 'Segredo'
-const MAIN_ROUTE = '/v1/transactions'
+const TRANSACTION_ROTE = '/v1/transactions'
+const ACCOUNT_ROUTE = '/v1/accounts'
 
 const TABLE_TRANSACTIONS = 'transactions'
 const TABLE_ACCOUNTS = 'accounts'
@@ -50,7 +51,7 @@ describe('Transactions', () => {
 
     await app.db(TABLE_TRANSACTIONS).insert(transactionsList)
 
-    return request(app).get(MAIN_ROUTE)
+    return request(app).get(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
         const transactions = res.body[0].transactions
@@ -69,7 +70,7 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    return await request(app).post(MAIN_ROUTE)
+    return await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
       .then(res => {
@@ -88,7 +89,7 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    return await request(app).post(MAIN_ROUTE)
+    return await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
       .then(res => {
@@ -107,7 +108,7 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    return await request(app).post(MAIN_ROUTE)
+    return await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
       .then(res => {
@@ -126,7 +127,7 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    return await request(app).post(MAIN_ROUTE)
+    return await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send({ ...transaction, ...newData })
       .then(res => {
@@ -168,11 +169,11 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    const transactionCreated = await request(app).post(MAIN_ROUTE)
+    const transactionCreated = await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
 
-    await request(app).get(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+    await request(app).get(`${TRANSACTION_ROTE}/${transactionCreated.body.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
         expect(res.status).toBe(200)
@@ -190,7 +191,7 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    const transactionCreated = await request(app).post(MAIN_ROUTE)
+    const transactionCreated = await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
 
@@ -198,7 +199,7 @@ describe('Transactions', () => {
       description: 'new T updated'
     }
 
-    await request(app).patch(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+    await request(app).patch(`${TRANSACTION_ROTE}/${transactionCreated.body.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .send(transactionToupdate)
       .then(res => {
@@ -217,11 +218,11 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    const transactionCreated = await request(app).post(MAIN_ROUTE)
+    const transactionCreated = await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
 
-    await request(app).delete(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+    await request(app).delete(`${TRANSACTION_ROTE}/${transactionCreated.body.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
         expect(res.status).toBe(204)
@@ -237,15 +238,37 @@ describe('Transactions', () => {
       account_id: accountUser1.id
     }
 
-    const transactionCreated = await request(app).post(MAIN_ROUTE)
+    const transactionCreated = await request(app).post(TRANSACTION_ROTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(transaction)
 
-    await request(app).delete(`${MAIN_ROUTE}/${transactionCreated.body.id}`)
+    await request(app).delete(`${TRANSACTION_ROTE}/${transactionCreated.body.id}`)
       .set('authorization', `bearer ${user2.token}`)
       .then(res => {
         expect(res.status).toBe(403)
         expect(res.body.error).toBe('Este recurso não pertence a este usuário')
+      })
+  })
+
+  test('Não deve remover conta com transação', async () => {
+    const transaction = {
+      description: 'new T delete',
+      date: new Date(),
+      ammount: 100,
+      type: 'ENTRADA',
+      account_id: accountUser1.id
+    }
+
+    await request(app).post(TRANSACTION_ROTE)
+      .set('authorization', `bearer ${user1.token}`)
+      .send(transaction)
+
+    await request(app).delete(`${ACCOUNT_ROUTE}/${accountUser1.id}`)
+      .set('authorization', `bearer ${user1.token}`)
+      .then(res => {
+        console.error(res.body)
+        expect(res.status).toBe(400)
+        expect(res.body.error).toBe('Essa conta possui transações associadas')
       })
   })
 })
