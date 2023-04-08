@@ -87,6 +87,16 @@ node_modules/.bin/knex migrate:latest --env test
 node_modules/.bin/knex migrate:rollback --env test
 ```
 
+### Executando criação de arquivos seed usando knex
+```sh
+node_modules/.bin/knex seed:make transfer --env test
+```
+
+### Executando criação de seed usando knex
+```sh
+node_modules/.bin/knex seed:run --env test
+```
+
 ## Instalando knex-logger
 ```sh
 npm i -S -E knex-logger
