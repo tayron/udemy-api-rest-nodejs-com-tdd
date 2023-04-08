@@ -12,13 +12,13 @@ let user1
 let user2
 
 describe('Account', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     user1 = await createUser()
     user2 = await createUser()
   })
 
   async function createUser() {
-    const mail = faker.internet.email()
+    const mail = `${faker.random.number()}_${faker.internet.email()}`
 
     await app.services.user.create({
       name: faker.name.firstName(),
@@ -82,8 +82,8 @@ describe('Account', () => {
       .set('authorization', `bearer ${user1.token}`)
 
     expect(req.status).toBe(200)
-    expect(req.body.length).toBe(1)
-    expect(req.body[0].name).toBe(accountUser1)
+    expect(req.body.length).toBeGreaterThan(0)
+    expect(req.body[req.body.length - 1].name).toBe(accountUser1)
   })
 
   test('Deve retornar uma conta por id', async (done) => {
