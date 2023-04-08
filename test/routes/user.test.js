@@ -1,22 +1,24 @@
 const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
+const faker = require('faker-br');
 
 const MAIN_ROUTE = '/v1/users'
 const TOKEN_SECRET = 'Segredo'
-const EMAIL = `${Date.now()}@mail.com`
 
 let userAdmin;
 
 describe('Usuário', () => {
   beforeAll(async () => {
+    const mail = faker.internet.email()
+
     await app.services.user.create({
-      name: 'Admin',
-      mail: EMAIL,
-      password: '123456'
+      name: faker.name.firstName(),
+      mail: mail,
+      password: faker.internet.password()
     })
 
-    userAdmin = await app.services.user.findByMail(EMAIL)
+    userAdmin = await app.services.user.findByMail(mail)
     userAdmin.token = token = jwt.encode(userAdmin, TOKEN_SECRET)
   })
 
@@ -33,9 +35,9 @@ describe('Usuário', () => {
   test('Deve não inserir um usuário com sucesso', () => {
 
     const user = {
-      name: 'Walter Milly',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.name.firstName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     let spyUserCreate = jest.spyOn(app.services.user, 'create').mockImplementation(() => null);
@@ -53,9 +55,9 @@ describe('Usuário', () => {
 
   test('Deve inserir um usuário', () => {
     const user = {
-      name: 'Walter Milly',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.name.firstName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
     return request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${userAdmin.token}`)
@@ -70,9 +72,9 @@ describe('Usuário', () => {
   test('Deve armazenar senha criptografada', async () => {
 
     const user = {
-      name: 'Walter Milly',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.name.firstName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     const res = await request(app).post(MAIN_ROUTE)
@@ -90,8 +92,8 @@ describe('Usuário', () => {
 
   test('Não deve inserir um usuário sem nome', () => {
     const user = {
-      mail: EMAIL,
-      password: '123456'
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     return request(app).post(MAIN_ROUTE)
@@ -105,9 +107,10 @@ describe('Usuário', () => {
 
   test('Não deve inserir um usuário sem email', async () => {
     const user = {
-      name: 'Walter Milly',
-      password: '123456'
+      name: faker.name.firstName(),
+      password: faker.internet.password()
     }
+
     const result = await request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
@@ -118,9 +121,10 @@ describe('Usuário', () => {
 
   test('Não deve inserir um usuário sem senha', (done) => {
     const user = {
-      name: 'Walter Milly',
-      mail: EMAIL
+      name: faker.name.firstName(),
+      mail: faker.internet.email()
     }
+
     request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${userAdmin.token}`)
       .send(user)
@@ -134,16 +138,31 @@ describe('Usuário', () => {
       })
   })
 
-  test('Não deve inserir um usuário com email existente', () => {
-    const user = {
-      name: 'Walter Milly',
-      mail: EMAIL,
-      password: '123456'
+  test('Não deve inserir um usuário com email existente', async () => {
+    const user1 = {
+      name: faker.name.firstName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
+    }
+
+    await request(app).post(MAIN_ROUTE)
+      .set('authorization', `bearer ${userAdmin.token}`)
+      .send(user1)
+      .then(res => {
+        expect(res.status).toBe(200);
+        expect(res.body.name).toBe(user1.name)
+        expect(res.body).not.toHaveProperty('password')
+      })
+
+    const user2 = {
+      ...user1, ...{
+        name: faker.name.firstName(), password: faker.internet.password()
+      }
     }
 
     return request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${userAdmin.token}`)
-      .send(user)
+      .send(user2)
       .then(res => {
         expect(res.status).toBe(400);
         expect(res.body.error).toBe('Já existe um usuário com este email')

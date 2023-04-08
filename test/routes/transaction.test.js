@@ -1,6 +1,7 @@
 const request = require('supertest')
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
+const faker = require('faker-br')
 
 const TOKEN_SECRET = 'Segredo'
 const TRANSACTION_ROTE = '/v1/transactions'
@@ -10,6 +11,8 @@ const TABLE_TRANSACTIONS = 'transactions'
 const TABLE_ACCOUNTS = 'accounts'
 const TABLE_USERS = 'users'
 
+const SAIDA = 'SAIDA'
+const ENTRADA = 'ENTRADA'
 
 let user1
 let user2
@@ -23,20 +26,23 @@ describe('Transactions', () => {
     await app.db(TABLE_ACCOUNTS).del()
     await app.db(TABLE_USERS).del()
 
+    const emailUser1 = faker.internet.email()
+    const emailUser2 = faker.internet.email()
+
     await app.db(TABLE_USERS).insert([
-      { name: 'User #1', mail: 'user1@mail.com', password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' },
-      { name: 'User #2', mail: 'user2@mail.com', password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' }
+      { name: faker.internet.userName(), mail: emailUser1, password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' },
+      { name: faker.internet.userName(), mail: emailUser2, password: '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES' }
     ])
 
-    user1 = await app.services.user.findByMail('user1@mail.com')
+    user1 = await app.services.user.findByMail(emailUser1)
     user1.token = jwt.encode(user1, TOKEN_SECRET)
 
-    user2 = await app.services.user.findByMail('user2@mail.com')
+    user2 = await app.services.user.findByMail(emailUser2)
     user2.token = jwt.encode(user2, TOKEN_SECRET)
 
     await app.db(TABLE_ACCOUNTS).insert([
-      { name: 'Account #1', 'user_id': user1.id },
-      { name: 'Account #2', 'user_id': user2.id }
+      { name: faker.finance.accountName(), 'user_id': user1.id },
+      { name: faker.finance.accountName(), 'user_id': user2.id }
     ])
 
     accountUser1 = (await app.services.account.findByUserId(user1.id))[0]
@@ -44,9 +50,23 @@ describe('Transactions', () => {
   })
 
   test('Deve listar apenas as transações do usuário', async () => {
+    const transactionAccountUser1 = `Transaction: ${faker.random.number()}`
+
     const transactionsList = [
-      { description: 'T1', date: new Date(), ammount: 100, type: 'ENTRADA', account_id: accountUser1.id },
-      { description: 'T2', date: new Date(), ammount: 300, type: 'SAIDA', account_id: accountUser2.id }
+      {
+        description: transactionAccountUser1,
+        date: new Date(),
+        ammount: faker.finance.amount(),
+        type: ENTRADA,
+        account_id: accountUser1.id
+      },
+      {
+        description: `Transaction: ${faker.random.number()}`,
+        date: new Date(),
+        ammount: faker.finance.amount(),
+        type: SAIDA,
+        account_id: accountUser2.id
+      }
     ]
 
     await app.db(TABLE_TRANSACTIONS).insert(transactionsList)
@@ -57,16 +77,16 @@ describe('Transactions', () => {
         const transactions = res.body[0].transactions
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(1);
-        expect(transactions[0].description).toBe('T1');
+        expect(transactions[0].description).toBe(transactionAccountUser1);
       })
   })
 
   test('Deve inserir uma transação com sucesso', async () => {
     const transaction = {
-      description: 'new T',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount() * 1,
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -76,16 +96,16 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(100)
+        expect(res.body.ammount).toBe(transaction.ammount)
       })
   })
 
   test('Deve inserir transação de entrada com valor positiva', async () => {
     const transaction = {
-      description: 'new T',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: '-100',
-      type: 'ENTRADA',
+      ammount: faker.finance.amount() * -1,
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -95,16 +115,16 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(100)
+        expect(res.body.ammount).toBe(transaction.ammount * 1)
       })
   })
 
   test('Deve inserir transação de saída com valor negativo', async () => {
     const transaction = {
-      description: 'new T SAIDA',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'SAIDA',
+      ammount: faker.finance.amount(),
+      type: SAIDA,
       account_id: accountUser1.id
     }
 
@@ -114,16 +134,16 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(-100)
+        expect(res.body.ammount).toBe(transaction.ammount * -1)
       })
   })
 
   const templateTestTransacaoIbvalida = async (newData, errorMessage) => {
     const transaction = {
-      description: 'new T SAIDA',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'SAIDA',
+      ammount: faker.finance.amount(),
+      type: SAIDA,
       account_id: accountUser1.id
     }
 
@@ -162,10 +182,10 @@ describe('Transactions', () => {
 
   test('Deve retornar uma transação por id', async () => {
     const transaction = {
-      description: 'new T ID',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount(),
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -184,10 +204,10 @@ describe('Transactions', () => {
 
   test('Deve alterar uma transação', async () => {
     const transaction = {
-      description: 'new T ID',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount(),
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -196,7 +216,7 @@ describe('Transactions', () => {
       .send(transaction)
 
     const transactionToupdate = {
-      description: 'new T updated'
+      description: `Transaction: ${faker.random.number()}`
     }
 
     await request(app).patch(`${TRANSACTION_ROTE}/${transactionCreated.body.id}`)
@@ -211,10 +231,10 @@ describe('Transactions', () => {
 
   test('Deve remover uma transação', async () => {
     const transaction = {
-      description: 'new T delete',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount(),
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -231,10 +251,10 @@ describe('Transactions', () => {
 
   test('Não deve remover uma transação de outro usuário', async () => {
     const transaction = {
-      description: 'new T delete',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount(),
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 
@@ -252,10 +272,10 @@ describe('Transactions', () => {
 
   test('Não deve remover conta com transação', async () => {
     const transaction = {
-      description: 'new T delete',
+      description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 100,
-      type: 'ENTRADA',
+      ammount: faker.finance.amount(),
+      type: ENTRADA,
       account_id: accountUser1.id
     }
 

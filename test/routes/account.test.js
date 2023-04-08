@@ -1,6 +1,7 @@
 const request = require('supertest')
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
+const faker = require('faker-br');
 
 const TOKEN_SECRET = 'Segredo'
 const MAIN_ROUTE = '/v1/accounts'
@@ -10,18 +11,19 @@ const TABLE_ACCOUNTS = 'accounts'
 let user1
 let user2
 
-describe.only('Account', () => {
+describe('Account', () => {
   beforeEach(async () => {
     user1 = await createUser()
     user2 = await createUser()
   })
 
   async function createUser() {
-    const mail = `${Date.now()}@mail.com`
+    const mail = faker.internet.email()
+
     await app.services.user.create({
-      name: 'User #1',
+      name: faker.name.firstName(),
       mail: mail,
-      password: '123456'
+      password: faker.internet.password()
     })
 
     user = await app.services.user.findByMail(mail)
@@ -31,14 +33,14 @@ describe.only('Account', () => {
   }
 
   test('Deve inserir uma conta com sucesso', () => {
-    const account = { name: 'ACC1' }
+    const account = { name: faker.finance.accountName() }
 
     return request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${user1.token}`)
       .send(account)
       .then(result => {
         expect(result.status).toBe(200)
-        expect(result.body.name).toBe('ACC1')
+        expect(result.body.name).toBe(account.name)
       })
   })
 
@@ -53,7 +55,7 @@ describe.only('Account', () => {
 
   test('Não deve inserir uma conta de nome duplicado para o mesmo usuário', async () => {
     const account = {
-      name: 'Acc duplicada',
+      name: faker.name.firstName(),
       user_id: user1.id
     }
 
@@ -69,9 +71,11 @@ describe.only('Account', () => {
   })
 
   test('Deve listar apenas as contas do usuário', async () => {
+    const accountUser1 = faker.finance.accountName()
+
     await app.db(TABLE_ACCOUNTS).insert([
-      { name: 'Acc user #1', user_id: user1.id },
-      { name: 'Acc user #2', user_id: user2.id }
+      { name: accountUser1, user_id: user1.id },
+      { name: faker.finance.accountName(), user_id: user2.id }
     ])
 
     const req = await request(app).get(MAIN_ROUTE)
@@ -79,12 +83,12 @@ describe.only('Account', () => {
 
     expect(req.status).toBe(200)
     expect(req.body.length).toBe(1)
-    expect(req.body[0].name).toBe('Acc user #1')
+    expect(req.body[0].name).toBe(accountUser1)
   })
 
   test('Deve retornar uma conta por id', async (done) => {
     const account = {
-      name: 'Acc by id',
+      name: faker.finance.accountName(),
       user_id: user1.id
     }
 
@@ -109,7 +113,7 @@ describe.only('Account', () => {
 
   test('Não deve retornar uma conta de outro usuário', async () => {
     const account = {
-      name: 'Acc usuário 2',
+      name: faker.finance.accountName(),
       user_id: user2.id
     }
 
@@ -126,7 +130,7 @@ describe.only('Account', () => {
 
   test('Deve alterar uma conta', async (done) => {
     const account = {
-      name: 'Acc by put',
+      name: faker.finance.accountName(),
       user_id: user1.id
     }
 
@@ -139,7 +143,7 @@ describe.only('Account', () => {
       done.fail()
     }
 
-    const newName = 'Acc by put updated'
+    const newName = faker.finance.accountName()
 
     await request(app).patch(`${MAIN_ROUTE}/${accountCreated.id}`)
       .set('authorization', `bearer ${user1.token}`)
@@ -154,7 +158,7 @@ describe.only('Account', () => {
 
   test('Não deve alterar uma conta de outro usuário', async () => {
     const account = {
-      name: 'Acc usuário 2',
+      name: faker.finance.accountName(),
       user_id: user2.id
     }
 
@@ -162,7 +166,7 @@ describe.only('Account', () => {
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
-    accountCreated.name = 'Acc usuário 2 updated'
+    accountCreated.name = faker.finance.accountName()
 
     const req = await request(app).patch(`${MAIN_ROUTE}/${accountCreated.id}`)
       .set('authorization', `bearer ${user1.token}`)
@@ -174,7 +178,7 @@ describe.only('Account', () => {
 
   test('Deve remover uma conta', async (done) => {
     const account = {
-      name: 'Acc by delete',
+      name: faker.finance.accountName(),
       user_id: user1.id
     }
 
@@ -197,7 +201,7 @@ describe.only('Account', () => {
 
   test('Não deve remover uma conta de outro usuário', async (done) => {
     const account = {
-      name: 'Acc by delete',
+      name: faker.finance.accountName(),
       user_id: user1.id
     }
 

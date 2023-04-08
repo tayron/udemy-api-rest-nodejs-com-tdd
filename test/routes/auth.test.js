@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../../src/app');
+const faker = require('faker-br');
 
 const MAIN_ROUTE = '/auth'
 const USER_ROUTE = '/v1/users'
@@ -7,9 +8,9 @@ const USER_ROUTE = '/v1/users'
 describe('Auth', () => {
   test('Deve criar usuário via signup', () => {
     const user = {
-      name: 'Usuario criado via signup',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.internet.userName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     return request(app).post(`${MAIN_ROUTE}/signup`)
@@ -25,9 +26,9 @@ describe('Auth', () => {
 
   test('Deve receber token ao logar', () => {
     const user = {
-      name: 'Usuario senha coreta',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.internet.userName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     const credential = {
@@ -46,9 +47,9 @@ describe('Auth', () => {
 
   test('Não deve autenticar usuário com senha errada', () => {
     const user = {
-      name: 'Usuario senha errada',
-      mail: `${Date.now()}@mail.com`,
-      password: '123456'
+      name: faker.internet.userName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     const credential = {
@@ -67,9 +68,9 @@ describe('Auth', () => {
 
   test('Não deve autenticar usuário com emal errado', () => {
     const user = {
-      name: 'Usuario senha errada',
-      mail: `nao-existe@mail.com`,
-      password: '123456'
+      name: faker.internet.userName(),
+      mail: faker.internet.email(),
+      password: faker.internet.password()
     }
 
     const credential = {

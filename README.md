@@ -101,6 +101,12 @@ npm i -S -E mysql
 npm i -S -E bcrypt-nodejs@0.0.3
 ```
 
+## Instalando faker para geração de dados faker usando nos testes
+```sh
+npm i -S -E faker-br@0.4.1
+```
+
+
 ## Instalando jwt para geração de token
 ```sh
 npm i -S -E jwt-simple@0.5.5
