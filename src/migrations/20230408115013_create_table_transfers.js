@@ -33,9 +33,11 @@ exports.up = (knex, Promise) => {
 
 exports.down = (knex, Promise) => {
   return Promise.all([
-    knex.schema.table('transactions', (t) => {
-      t.dropColumn('transfer_id')
+    knex.schema.table('transactions', async (t) => {
+      await t.dropForeign('transfer_id')
+      await t.dropColumn('transfer_id')
     }),
+
     knex.schema.dropTable('transfers')
   ])
 };

@@ -12,6 +12,13 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
+  const findByTransferId = async (id) => {
+    const account = await app.db(TABLE_NAME).select()
+      .where({ transfer_id: id })
+
+    return account ? JSON.parse(JSON.stringify(account)) : null
+  }
+
   const create = async (transaction) => {
     if (!transaction.description) throw new ValidationError('Descrição da transação é obrigatório')
     if (!transaction.date) throw new ValidationError('Data da transação é obrigatório')
@@ -68,5 +75,5 @@ module.exports = (app) => {
     }
   }
 
-  return { findByAccountId, create, findByDescriptionAccountId, findById, remove, update }
+  return { findByAccountId, findByTransferId, create, findByDescriptionAccountId, findById, remove, update }
 }

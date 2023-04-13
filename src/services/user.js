@@ -35,9 +35,9 @@ module.exports = (app) => {
     return user ? JSON.parse(JSON.stringify(user)) : null
   }
 
-  const getPasswordByMail = async (mail) => {
+  const getAllDataByMail = async (mail) => {
     const user = await app.db(TABLE_NAME)
-      .select(['password'])
+      .select(['id', 'name', 'mail', 'password'])
       .where('mail', mail)
       .first();
 
@@ -53,5 +53,5 @@ module.exports = (app) => {
     return user ? JSON.parse(JSON.stringify(user)) : null
   }
 
-  return { findAll, create, findByMail, findById, getPasswordByMail }
+  return { findAll, create, findByMail, findById, getAllDataByMail }
 }

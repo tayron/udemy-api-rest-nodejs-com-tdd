@@ -10,7 +10,7 @@ module.exports = (app) => {
   router.post('/signin', async (req, res, next) => {
     try {
       const user = await app.services.user
-        .getPasswordByMail(req.body.mail)
+        .getAllDataByMail(req.body.mail)
 
       if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
         throw new ValidationError('Usuário ou senha inválido')
