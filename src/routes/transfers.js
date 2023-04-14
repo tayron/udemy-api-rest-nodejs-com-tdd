@@ -1,5 +1,7 @@
 const express = require('express')
 const ValidationError = require('../erros/ValidationError')
+const ENTRADA = 'ENTRADA'
+const SAIDA = 'SAIDA'
 
 module.exports = (app) => {
   const router = express.Router()
@@ -31,6 +33,32 @@ module.exports = (app) => {
       if (!transfer) {
         throw new ValidationError('Transferência não criada')
       }
+
+      transfer.transactions = []
+
+      transfer.transactions[0] = {
+        description: `Transferécia para ${transfer.destination_account_id}`,
+        date: transfer.date,
+        ammount: transfer.ammount,
+        type: SAIDA,
+        account_id: transfer.origin_account_id,
+        transfer_id: transferId
+      }
+
+      transfer.transactions[1] = {
+        description: `Transferécia de ${transfer.origin_account_id}`,
+        date: transfer.date,
+        ammount: transfer.ammount,
+        type: ENTRADA,
+        account_id: transfer.destination_account_id,
+        transfer_id: transferId
+      }
+
+      transfer.transactions[0].id = await app.services.transaction
+        .create(transfer.transactions[0])
+
+      transfer.transactions[1].id = await app.services.transaction
+        .create(transfer.transactions[1])
 
       return res.status(200).send(transfer)
     } catch (err) {

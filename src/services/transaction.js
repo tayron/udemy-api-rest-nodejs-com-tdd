@@ -27,7 +27,9 @@ module.exports = (app) => {
     validateTransactionType(transaction.type)
 
     transaction = formatTransactionAmmount(transaction)
-    return app.db(TABLE_NAME).insert(transaction);
+
+    const listId = await app.db(TABLE_NAME).insert(transaction).returning('id');
+    return listId[0]
   }
 
   const findByDescriptionAccountId = async (description, accountId) => {

@@ -16,7 +16,8 @@ module.exports = (app) => {
     if (!transfer.destination_account_id) throw new ValidationError('Conta de destino deve ser informada')
     if (!transfer.user_id) throw new ValidationError('Usuário responsável pela transação deve ser informado')
 
-    return app.db(TABLE_NAME).insert(transfer).returning('id');
+    const listId = await app.db(TABLE_NAME).insert(transfer).returning('id');
+    return listId[0]
   }
 
   const findById = async (id) => {
