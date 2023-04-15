@@ -32,6 +32,11 @@ module.exports = (app) => {
     return listId[0]
   }
 
+  const update = async (id, transaction) => {
+    transaction = formatTransactionamount(transaction)
+    return app.db(TABLE_NAME).update(transaction).where({ id });
+  }
+
   const findByDescriptionAccountId = async (description, accountId) => {
     const transaction = await app.db(TABLE_NAME).select()
       .where({ description, account_id: accountId }).first();
@@ -50,9 +55,8 @@ module.exports = (app) => {
     return app.db(TABLE_NAME).delete().where({ id });
   }
 
-  const update = async (id, transaction) => {
-    transaction = formatTransactionamount(transaction)
-    return app.db(TABLE_NAME).update(transaction).where({ id });
+  const removeByTransferID = async (id) => {
+    return app.db(TABLE_NAME).delete().where({ transfer_id: id });
   }
 
   function formatTransactionamount(transaction) {
@@ -77,5 +81,5 @@ module.exports = (app) => {
     }
   }
 
-  return { findByAccountId, findByTransferId, create, findByDescriptionAccountId, findById, remove, update }
+  return { findByAccountId, findByTransferId, create, findByDescriptionAccountId, findById, remove, removeByTransferID, update }
 }

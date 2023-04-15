@@ -14,9 +14,11 @@ let TOKEN = ''
 
 describe('Transfers', async () => {
 
+  let transferID
+
   beforeAll(async () => {
-    // await app.db.migrate.rollback()
-    // await app.db.migrate.latest()
+    //await app.db.migrate.rollback()
+    //await app.db.migrate.latest()
     await app.db.seed.run();
 
     const user = await app.services.user.findById(USER_ID)
@@ -58,6 +60,8 @@ describe('Transfers', async () => {
       .set('authorization', `bearer ${TOKEN}`)
       .send(transfer)
 
+    transferID = transferCreated.body.id
+
     expect(transferCreated.status).toBe(200)
     expect(transferCreated.body.description).toBe(transfer.description)
 
@@ -71,6 +75,24 @@ describe('Transfers', async () => {
     expect(transactions[1].id).toBe(transferCreated.body.transactions[1].id)
     expect(transactions[0].amount).toBe(transferCreated.body.transactions[0].amount)
     expect(transactions[1].amount).toBe(transferCreated.body.transactions[1].amount)
+  })
+
+  test('Deve alterar uma transferencia com sucesso', async () => {
+    const transfer = {
+      description: `Transfer: ${faker.random.number()}`,
+      date: new Date(),
+      amount: 600.10,
+      origin_account_id: USER_ID,
+      destination_account_id: 10001,
+      user_id: USER_ID
+    }
+
+    const transferUpdated = await request(app).patch(`${MAIN_ROTE}/${transferID}`)
+      .set('authorization', `bearer ${TOKEN}`)
+      .send(transfer)
+
+    expect(transferUpdated.status).toBe(200)
+    expect(transferUpdated.body.description).toBe(transfer.description)
   })
 
   test('Deve retornar transferencia por id', async () => {

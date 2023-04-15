@@ -35,6 +35,10 @@ module.exports = (app) => {
     return listId[0]
   }
 
+  const update = async (id, transfer) => {
+    return app.db(TRANSFER_TABLE).update(transfer).where({ id });
+  }
+
   const findById = async (id) => {
     const account = await app.db(TRANSFER_TABLE).select()
       .where({ id }).first()
@@ -42,5 +46,5 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
-  return { findByUserId, create, findById }
+  return { findByUserId, create, update, findById }
 }
