@@ -265,7 +265,6 @@ describe('Removendo transferencia', async () => {
     return request(app).delete(`${MAIN_ROTE}/10000`)
       .set('authorization', `bearer ${TOKEN}`)
       .then(res => {
-        console.error(res.body)
         expect(res.status).toBe(204)
       })
   })
