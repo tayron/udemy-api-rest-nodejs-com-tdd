@@ -53,7 +53,7 @@ module.exports = (app) => {
     }
   })
 
-  router.patch('/:id', async (req, res, next) => {
+  router.put('/:id', async (req, res, next) => {
     try {
       const transferId = req.params.id
       await app.services.transfer.update(transferId, req.body);

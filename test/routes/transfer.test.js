@@ -87,7 +87,7 @@ describe('Transfers', async () => {
       user_id: USER_ID
     }
 
-    const transferUpdated = await request(app).patch(`${MAIN_ROTE}/${transferID}`)
+    const transferUpdated = await request(app).put(`${MAIN_ROTE}/${transferID}`)
       .set('authorization', `bearer ${TOKEN}`)
       .send(transfer)
 
@@ -156,7 +156,7 @@ describe('Transfers with transactions', async () => {
   })
 })
 
-describe('Transfers invalid', async () => {
+describe('Criando transferencia inválida', async () => {
 
   const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
     const transferData = {
@@ -169,6 +169,57 @@ describe('Transfers invalid', async () => {
     }
 
     return await request(app).post(MAIN_ROTE)
+      .set('authorization', `bearer ${TOKEN}`)
+      .send({ ...transferData, ...newData })
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe(errorMessage);
+      })
+  }
+
+  test('Não deve inserir sem descrição',
+    async () => templateTestTransferenciaInvalida(
+      { description: null }, 'Descrição deve ser informada'))
+
+  test('Não deve inserir sem valor',
+    async () => templateTestTransferenciaInvalida(
+      { amount: null }, 'Valor deve ser informado'))
+
+  test('Não deve inserir sem data',
+    async () => templateTestTransferenciaInvalida(
+      { date: null }, 'Data deve ser informada'))
+
+  test('Não deve inserir sem conta destino',
+    async () => templateTestTransferenciaInvalida(
+      { destination_account_id: null }, 'Conta de destino deve ser informada'))
+
+  test('Não deve inserir sem conta origem',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: null }, 'Conta de origem deve ser informada'))
+
+  test('Não deve inserir se a conta origem e destino forem as mesmas',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: USER_ID, destination_account_id: USER_ID },
+      'Conta de origem e destino não podem ser a mesma'))
+
+  test('Não deve inserir se as contas pertencerem a outro usuario',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
+})
+
+describe('Alterando transferencia inválida', async () => {
+
+  const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
+    const transferData = {
+      description: `Transfer: ${faker.random.number()}`,
+      date: new Date(),
+      amount: 12.05,
+      origin_account_id: USER_ID,
+      destination_account_id: 10001,
+      user_id: USER_ID
+    }
+
+    return await request(app).put(`${MAIN_ROTE}/10000`)
       .set('authorization', `bearer ${TOKEN}`)
       .send({ ...transferData, ...newData })
       .then(res => {
