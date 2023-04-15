@@ -1,10 +1,25 @@
 const express = require('express')
 const ValidationError = require('../erros/ValidationError')
+const RecursoIndevidoError = require('../erros/RecursoIndevidoError')
 const ENTRADA = 'ENTRADA'
 const SAIDA = 'SAIDA'
 
 module.exports = (app) => {
   const router = express.Router()
+
+  router.param('id', async (req, res, next) => {
+
+    try {
+      const transfer = await app.services.transfer.findById(req.params.id)
+      if (transfer.user_id != req.user.id) {
+        throw new RecursoIndevidoError('Este recurso não pertence a este usuário')
+      }
+
+      next()
+    } catch (err) {
+      next(err)
+    }
+  })
 
   const validate = async (req, res, next) => {
     try {
@@ -53,7 +68,7 @@ module.exports = (app) => {
 
   router.get('/:id', async (req, res, next) => {
     try {
-      await await app.services.transfer.findById(req.params.id)
+      await app.services.transfer.findById(req.params.id)
         .then(result => {
           return res.status(200).send(result)
         })

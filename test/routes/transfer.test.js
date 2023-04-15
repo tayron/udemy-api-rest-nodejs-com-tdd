@@ -104,6 +104,15 @@ describe('Transfers', async () => {
         expect(res.body.description).toContain('Transfer:')
       })
   })
+
+  test('Não deve retornar transferencia de outro usuário', async () => {
+    return request(app).get(`${MAIN_ROTE}/10001`)
+      .set('authorization', `bearer ${TOKEN}`)
+      .then(res => {
+        expect(res.status).toBe(403)
+        expect(res.body.error).toBe('Este recurso não pertence a este usuário')
+      })
+  })
 })
 
 
@@ -282,5 +291,4 @@ describe('Removendo transferencia', async () => {
         expect(res).toHaveLength(0)
       })
   })
-
 })
