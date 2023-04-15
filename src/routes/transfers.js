@@ -6,6 +6,15 @@ const SAIDA = 'SAIDA'
 module.exports = (app) => {
   const router = express.Router()
 
+  const validate = async (req, res, next) => {
+    try {
+      await app.services.transfer.validateData({ ...req.body, user_id: req.user.id })
+      next()
+    } catch (err) {
+      next(err)
+    }
+  }
+
   router.get('/', async (req, res, next) => {
     try {
       const transferList = await app.services.transfer.findByUserId(req.user.id)
@@ -25,9 +34,9 @@ module.exports = (app) => {
     }
   });
 
-  router.post('/', async (req, res, next) => {
+  router.post('/', validate, async (req, res, next) => {
     try {
-      const transferId = await app.services.transfer.create(req.body);
+      const transferId = await app.services.transfer.create({ ...req.body, user_id: req.user.id });
       const transfer = await app.services.transfer.findById(transferId);
 
       if (!transfer) {
@@ -53,10 +62,10 @@ module.exports = (app) => {
     }
   })
 
-  router.put('/:id', async (req, res, next) => {
+  router.put('/:id', validate, async (req, res, next) => {
     try {
       const transferId = req.params.id
-      await app.services.transfer.update(transferId, req.body);
+      await app.services.transfer.update(transferId, { ...req.body, user_id: req.user.id });
 
       const transfer = await app.services.transfer
         .findById(transferId);

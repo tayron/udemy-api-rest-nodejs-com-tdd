@@ -11,18 +11,15 @@ module.exports = (app) => {
   }
 
   const create = async (transfer) => {
-    await validateData(transfer)
-
     const listId = await app.db(TRANSFER_TABLE).insert(transfer).returning('id');
     return listId[0]
   }
 
   const update = async (id, transfer) => {
-    await validateData(transfer)
     return app.db(TRANSFER_TABLE).update(transfer).where({ id });
   }
 
-  async function validateData(transfer) {
+  const validateData = async (transfer) => {
     if (!transfer.description) throw new ValidationError('Descrição deve ser informada')
     if (!transfer.date) throw new ValidationError('Data deve ser informada')
     if (!transfer.amount) throw new ValidationError('Valor deve ser informado')
@@ -51,5 +48,5 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
-  return { findByUserId, create, update, findById }
+  return { findByUserId, create, update, validateData, findById }
 }
