@@ -5,7 +5,7 @@ exports.up = (knex, Promise) => {
       t.increments('id').primary();
       t.string('description').notNull();
       t.date('date').notNull();
-      t.decimal('ammount', 15, 2).notNull();
+      t.decimal('amount', 15, 2).notNull();
       t.integer('origin_account_id')
         .unsigned()
         .references('id')

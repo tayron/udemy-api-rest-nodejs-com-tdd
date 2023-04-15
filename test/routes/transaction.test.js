@@ -56,14 +56,14 @@ describe('Transactions', () => {
       {
         description: transactionAccountUser1,
         date: new Date(),
-        ammount: faker.finance.amount(),
+        amount: faker.finance.amount(),
         type: ENTRADA,
         account_id: accountUser1.id
       },
       {
         description: `Transaction: ${faker.random.number()}`,
         date: new Date(),
-        ammount: faker.finance.amount(),
+        amount: faker.finance.amount(),
         type: SAIDA,
         account_id: accountUser2.id
       }
@@ -85,7 +85,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount() * 1,
+      amount: faker.finance.amount() * 1,
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -96,7 +96,7 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(transaction.ammount)
+        expect(res.body.amount).toBe(transaction.amount)
       })
   })
 
@@ -104,7 +104,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount() * -1,
+      amount: faker.finance.amount() * -1,
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -115,7 +115,7 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(transaction.ammount * 1)
+        expect(res.body.amount).toBe(transaction.amount * 1)
       })
   })
 
@@ -123,7 +123,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: SAIDA,
       account_id: accountUser1.id
     }
@@ -134,7 +134,7 @@ describe('Transactions', () => {
       .then(res => {
         expect(res.status).toBe(200);
         expect(res.body.account_id).toBe(accountUser1.id)
-        expect(res.body.ammount).toBe(transaction.ammount * -1)
+        expect(res.body.amount).toBe(transaction.amount * -1)
       })
   })
 
@@ -142,7 +142,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: SAIDA,
       account_id: accountUser1.id
     }
@@ -162,7 +162,7 @@ describe('Transactions', () => {
 
   test('Não deve inserir uma transação sem valor',
     async () => templateTestTransacaoIbvalida(
-      { ammount: null }, 'Valor da transação é obrigatório'))
+      { amount: null }, 'Valor da transação é obrigatório'))
 
   test('Não deve inserir uma transação sem data',
     async () => templateTestTransacaoIbvalida(
@@ -184,7 +184,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -206,7 +206,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -233,7 +233,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -253,7 +253,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: ENTRADA,
       account_id: accountUser1.id
     }
@@ -274,7 +274,7 @@ describe('Transactions', () => {
     const transaction = {
       description: `Transaction: ${faker.random.number()}`,
       date: new Date(),
-      ammount: faker.finance.amount(),
+      amount: faker.finance.amount(),
       type: ENTRADA,
       account_id: accountUser1.id
     }

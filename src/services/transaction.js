@@ -22,11 +22,11 @@ module.exports = (app) => {
   const create = async (transaction) => {
     if (!transaction.description) throw new ValidationError('Descrição da transação é obrigatório')
     if (!transaction.date) throw new ValidationError('Data da transação é obrigatório')
-    if (!transaction.ammount) throw new ValidationError('Valor da transação é obrigatório')
+    if (!transaction.amount) throw new ValidationError('Valor da transação é obrigatório')
     if (!transaction.account_id) throw new ValidationError('Conta referente à transação é obrigatória')
     validateTransactionType(transaction.type)
 
-    transaction = formatTransactionAmmount(transaction)
+    transaction = formatTransactionamount(transaction)
 
     const listId = await app.db(TABLE_NAME).insert(transaction).returning('id');
     return listId[0]
@@ -51,17 +51,17 @@ module.exports = (app) => {
   }
 
   const update = async (id, transaction) => {
-    transaction = formatTransactionAmmount(transaction)
+    transaction = formatTransactionamount(transaction)
     return app.db(TABLE_NAME).update(transaction).where({ id });
   }
 
-  function formatTransactionAmmount(transaction) {
-    if (transaction.type === TIPO_TRANSACAO_ENTRADA && transaction.ammount < 0) {
-      transaction.ammount = transaction.ammount * 1
+  function formatTransactionamount(transaction) {
+    if (transaction.type === TIPO_TRANSACAO_ENTRADA && transaction.amount < 0) {
+      transaction.amount = transaction.amount * 1
     }
 
-    if (transaction.type === TIPO_TRANSACAO_SAIDA && transaction.ammount > 0) {
-      transaction.ammount = transaction.ammount * -1
+    if (transaction.type === TIPO_TRANSACAO_SAIDA && transaction.amount > 0) {
+      transaction.amount = transaction.amount * -1
     }
 
     return transaction

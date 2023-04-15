@@ -39,7 +39,7 @@ module.exports = (app) => {
       transfer.transactions[0] = {
         description: `Transferécia para ${transfer.destination_account_id}`,
         date: transfer.date,
-        ammount: transfer.ammount,
+        amount: transfer.amount,
         type: SAIDA,
         account_id: transfer.origin_account_id,
         transfer_id: transferId
@@ -48,7 +48,7 @@ module.exports = (app) => {
       transfer.transactions[1] = {
         description: `Transferécia de ${transfer.origin_account_id}`,
         date: transfer.date,
-        ammount: transfer.ammount,
+        amount: transfer.amount,
         type: ENTRADA,
         account_id: transfer.destination_account_id,
         transfer_id: transferId

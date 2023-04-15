@@ -48,7 +48,7 @@ describe('Transfers', async () => {
     const transfer = {
       description: `Transfer: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 95.10,
+      amount: 95.10,
       origin_account_id: USER_ID,
       destination_account_id: 10001,
       user_id: USER_ID
@@ -69,8 +69,8 @@ describe('Transfers', async () => {
     expect(transactions[1].description).toBe(transferCreated.body.transactions[1].description)
     expect(transactions[0].id).toBe(transferCreated.body.transactions[0].id)
     expect(transactions[1].id).toBe(transferCreated.body.transactions[1].id)
-    expect(transactions[0].ammount).toBe(transferCreated.body.transactions[0].ammount)
-    expect(transactions[1].ammount).toBe(transferCreated.body.transactions[1].ammount)
+    expect(transactions[0].amount).toBe(transferCreated.body.transactions[0].amount)
+    expect(transactions[1].amount).toBe(transferCreated.body.transactions[1].amount)
   })
 })
 
@@ -84,7 +84,7 @@ describe('Transfers with transactions', async () => {
     const transfer = {
       description: `Transfer: ${faker.random.number()}`,
       date: new Date(),
-      ammount: 95.10,
+      amount: 95.10,
       origin_account_id: USER_ID,
       destination_account_id: 10001,
       user_id: USER_ID
@@ -102,7 +102,7 @@ describe('Transfers with transactions', async () => {
 
   test('As transações equivalentes devem ter sido geradas', async () => {
     const transactions = await app.db(TRANSACTIONS_TABLE)
-      .where({ transfer_id: transferId }).orderBy('ammount', 'asc');
+      .where({ transfer_id: transferId }).orderBy('amount', 'asc');
 
     [transacaoSaida, transacaoEntrada] = transactions
 
@@ -111,16 +111,66 @@ describe('Transfers with transactions', async () => {
 
   test('A transação de saída deve ser negativa', async () => {
     expect(transacaoSaida.type).toBe(SAIDA)
-    expect(transacaoSaida.ammount).toBeLessThan(0)
+    expect(transacaoSaida.amount).toBeLessThan(0)
   })
 
   test('A transação de entrada deve ser positiva', async () => {
     expect(transacaoEntrada.type).toBe(ENTRADA)
-    expect(transacaoEntrada.ammount).toBeGreaterThan(0)
+    expect(transacaoEntrada.amount).toBeGreaterThan(0)
   })
 
   test('Todas as transações devem referenciar a trasnferencia que a originou', async () => {
     expect(transacaoEntrada.transfer_id).toBe(transferId)
     expect(transacaoSaida.transfer_id).toBe(transferId)
   })
+})
+
+describe('Transfers invalid', async () => {
+
+  const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
+    const transferData = {
+      description: `Transfer: ${faker.random.number()}`,
+      date: new Date(),
+      amount: 12.05,
+      origin_account_id: USER_ID,
+      destination_account_id: 10001,
+      user_id: USER_ID
+    }
+
+    return await request(app).post(MAIN_ROTE)
+      .set('authorization', `bearer ${TOKEN}`)
+      .send({ ...transferData, ...newData })
+      .then(res => {
+        expect(res.status).toBe(400);
+        expect(res.body.error).toBe(errorMessage);
+      })
+  }
+
+  test('Não deve inserir sem descrição',
+    async () => templateTestTransferenciaInvalida(
+      { description: null }, 'Descrição deve ser informada'))
+
+  test('Não deve inserir sem valor',
+    async () => templateTestTransferenciaInvalida(
+      { amount: null }, 'Valor deve ser informado'))
+
+  test('Não deve inserir sem data',
+    async () => templateTestTransferenciaInvalida(
+      { date: null }, 'Data deve ser informada'))
+
+  test('Não deve inserir sem conta destino',
+    async () => templateTestTransferenciaInvalida(
+      { destination_account_id: null }, 'Conta de destino deve ser informada'))
+
+  test('Não deve inserir sem conta origem',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: null }, 'Conta de origem deve ser informada'))
+
+  test('Não deve inserir se a conta origem e destino forem as mesmas',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: USER_ID, destination_account_id: USER_ID }, 'Conta de origem e destino não podem ser a mesma'))
+
+  test('Não deve inserir se as contas pertencerem a outro usuario',
+    async () => templateTestTransferenciaInvalida(
+      { origin_account_id: 999 }, 'Conta de origem deve pertencer ao usuário logado'))
 })

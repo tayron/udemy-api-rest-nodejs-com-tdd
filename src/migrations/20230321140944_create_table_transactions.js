@@ -5,7 +5,7 @@ exports.up = (knex) => {
     t.string('description').notNull();
     t.enu('type', ['ENTRADA', 'SAIDA']).notNull();
     t.date('date').notNull();
-    t.decimal('ammount', 15, 2).notNull();
+    t.decimal('amount', 15, 2).notNull();
     t.boolean('status').notNull().default(false);
     t.integer('account_id')
       .unsigned()
