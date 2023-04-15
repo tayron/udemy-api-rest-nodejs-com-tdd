@@ -1,9 +1,10 @@
 const ValidationError = require('../erros/ValidationError')
-const TABLE_NAME = 'transfers'
+const TRANSFER_TABLE = 'transfers'
+const ACCOUNT_TABLE = 'accounts'
 
 module.exports = (app) => {
   const findByUserId = async (id) => {
-    const account = await app.db(TABLE_NAME).select()
+    const account = await app.db(TRANSFER_TABLE).select()
       .where({ user_id: id })
 
     return account ? JSON.parse(JSON.stringify(account)) : null
@@ -21,16 +22,21 @@ module.exports = (app) => {
       throw new ValidationError('Conta de origem e destino não podem ser a mesma')
     }
 
-    if (transfer.origin_account_id != transfer.user_id) {
-      throw new ValidationError('Conta de origem deve pertencer ao usuário logado')
-    }
+    const accounts = await app.db(ACCOUNT_TABLE)
+      .whereIn('id', [transfer.origin_account_id, transfer.destination_account_id])
 
-    const listId = await app.db(TABLE_NAME).insert(transfer).returning('id');
+    accounts.forEach(account => {
+      if (account.user_id != parseInt(transfer.user_id, 10)) {
+        throw new ValidationError(`A conta #${account.id} não pertence ao usuário`)
+      }
+    });
+
+    const listId = await app.db(TRANSFER_TABLE).insert(transfer).returning('id');
     return listId[0]
   }
 
   const findById = async (id) => {
-    const account = await app.db(TABLE_NAME).select()
+    const account = await app.db(TRANSFER_TABLE).select()
       .where({ id }).first()
 
     return account ? JSON.parse(JSON.stringify(account)) : null

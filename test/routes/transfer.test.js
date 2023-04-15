@@ -72,6 +72,15 @@ describe('Transfers', async () => {
     expect(transactions[0].amount).toBe(transferCreated.body.transactions[0].amount)
     expect(transactions[1].amount).toBe(transferCreated.body.transactions[1].amount)
   })
+
+  test('Deve retornar transferencia por id', async () => {
+    return request(app).get(`${MAIN_ROTE}/10000`)
+      .set('authorization', `bearer ${TOKEN}`)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body.description).toContain('Transfer:')
+      })
+  })
 })
 
 
@@ -168,9 +177,10 @@ describe('Transfers invalid', async () => {
 
   test('Não deve inserir se a conta origem e destino forem as mesmas',
     async () => templateTestTransferenciaInvalida(
-      { origin_account_id: USER_ID, destination_account_id: USER_ID }, 'Conta de origem e destino não podem ser a mesma'))
+      { origin_account_id: USER_ID, destination_account_id: USER_ID },
+      'Conta de origem e destino não podem ser a mesma'))
 
   test('Não deve inserir se as contas pertencerem a outro usuario',
     async () => templateTestTransferenciaInvalida(
-      { origin_account_id: 999 }, 'Conta de origem deve pertencer ao usuário logado'))
+      { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
 })

@@ -66,5 +66,16 @@ module.exports = (app) => {
     }
   })
 
+  router.get('/:id', async (req, res, next) => {
+    try {
+      await await app.services.transfer.findById(req.params.id)
+        .then(result => {
+          return res.status(200).send(result)
+        })
+    } catch (err) {
+      next(err)
+    }
+  })
+
   return router
 }
