@@ -48,5 +48,9 @@ module.exports = (app) => {
     return account ? JSON.parse(JSON.stringify(account)) : null
   }
 
-  return { findByUserId, create, update, validateData, findById }
+  const remove = async (id) => {
+    return app.db(TRANSFER_TABLE).delete().where({ id });
+  }
+
+  return { findByUserId, create, update, validateData, findById, remove }
 }

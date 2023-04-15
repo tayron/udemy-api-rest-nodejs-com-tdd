@@ -111,5 +111,15 @@ module.exports = (app) => {
       .create(transfer.transactions[1])
   }
 
+  router.delete('/:id', async (req, res, next) => {
+    try {
+      await app.services.transaction.removeByTransferID(req.params.id)
+      await app.services.transfer.remove(req.params.id)
+      return res.status(204).send()
+    } catch (err) {
+      next(err)
+    }
+  })
+
   return router
 }

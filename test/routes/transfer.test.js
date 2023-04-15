@@ -5,6 +5,7 @@ const faker = require('faker-br')
 const MAIN_ROTE = '/v1/transfers'
 const AUTH_ROUTE = '/auth'
 
+const TRANSFERS_TABLE = 'transfers'
 const TRANSACTIONS_TABLE = 'transactions'
 const ENTRADA = 'ENTRADA'
 const SAIDA = 'SAIDA'
@@ -256,4 +257,31 @@ describe('Alterando transferencia inválida', async () => {
   test('Não deve inserir se as contas pertencerem a outro usuario',
     async () => templateTestTransferenciaInvalida(
       { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
+})
+
+describe('Removendo transferencia', async () => {
+
+  test('Deve retornar o status 204', async () => {
+    return request(app).delete(`${MAIN_ROTE}/10000`)
+      .set('authorization', `bearer ${TOKEN}`)
+      .then(res => {
+        console.error(res.body)
+        expect(res.status).toBe(204)
+      })
+  })
+
+  test('O registro deve ter sido apagado no banco', async () => {
+    return app.db(TRANSFERS_TABLE).where({ id: 10000 })
+      .then(res => {
+        expect(res).toHaveLength(0)
+      })
+  })
+
+  test('As transações associadas devem ter sido removidas', async () => {
+    return app.db(TRANSACTIONS_TABLE).where({ transfer_id: 10000 })
+      .then(res => {
+        expect(res).toHaveLength(0)
+      })
+  })
+
 })
