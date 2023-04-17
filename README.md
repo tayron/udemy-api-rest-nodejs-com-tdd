@@ -90,6 +90,7 @@ node_modules/.bin/knex migrate:rollback --env test
 ### Executando criação de arquivos seed usando knex
 ```sh
 node_modules/.bin/knex seed:make transfer --env test
+node_modules/.bin/knex seed:make balance --env test
 ```
 
 ### Executando criação de seed usando knex
