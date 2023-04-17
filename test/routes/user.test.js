@@ -8,7 +8,7 @@ const TOKEN_SECRET = 'Segredo'
 
 let userAdmin;
 
-describe('User', () => {
+describe('Usuário', () => {
   beforeAll(async () => {
     const mail = faker.internet.email()
 

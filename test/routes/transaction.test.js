@@ -20,7 +20,7 @@ let user2
 let accountUser1
 let accountUser2
 
-describe('Transactions', () => {
+describe('Transação bancária do usuário', () => {
   beforeAll(async () => {
     await app.db(TABLE_TRANSACTIONS).del()
     await app.db(TABLE_ACCOUNTS).del()

@@ -5,7 +5,7 @@ const faker = require('faker-br');
 const MAIN_ROUTE = '/auth'
 const USER_ROUTE = '/v1/users'
 
-describe('Auth', () => {
+describe('Autenticação do usuário', () => {
   test('Deve criar usuário via signup', () => {
     const user = {
       name: faker.internet.userName(),

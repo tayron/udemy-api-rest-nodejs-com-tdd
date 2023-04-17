@@ -13,7 +13,7 @@ const SAIDA = 'SAIDA'
 const USER_ID = 10000
 let TOKEN = ''
 
-describe('Transfers', async () => {
+describe('Transferência bancaria do usuário', async () => {
 
   let transferID
 
@@ -116,7 +116,7 @@ describe('Transfers', async () => {
 })
 
 
-describe('Transfers with transactions', async () => {
+describe('Transferência bancaria com transação', async () => {
   let transferId
   let transacaoEntrada
   let transacaoSaida
@@ -166,7 +166,7 @@ describe('Transfers with transactions', async () => {
   })
 })
 
-describe('Criando transferencia inválida', async () => {
+describe('Criando transferência bancaria inválida', async () => {
 
   const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
     const transferData = {
@@ -217,7 +217,7 @@ describe('Criando transferencia inválida', async () => {
       { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
 })
 
-describe('Alterando transferencia inválida', async () => {
+describe('Alterando transferência bancaria inválida', async () => {
 
   const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
     const transferData = {
@@ -268,7 +268,7 @@ describe('Alterando transferencia inválida', async () => {
       { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
 })
 
-describe('Removendo transferencia', async () => {
+describe('Removendo transferência bancaria', async () => {
 
   test('Deve retornar o status 204', async () => {
     return request(app).delete(`${MAIN_ROTE}/10000`)

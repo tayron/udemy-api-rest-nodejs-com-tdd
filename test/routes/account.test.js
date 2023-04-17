@@ -11,7 +11,7 @@ const TABLE_ACCOUNTS = 'accounts'
 let user1
 let user2
 
-describe('Account', () => {
+describe('Conta bancária do usuário', () => {
   beforeAll(async () => {
     user1 = await createUser()
     user2 = await createUser()
