@@ -3,6 +3,7 @@ const ValidationError = require('../erros/ValidationError')
 const RecursoIndevidoError = require('../erros/RecursoIndevidoError')
 const ENTRADA = 'ENTRADA'
 const SAIDA = 'SAIDA'
+const TRANSACAO_CONCLUIDA = true
 
 module.exports = (app) => {
   const router = express.Router()
@@ -107,7 +108,8 @@ module.exports = (app) => {
       amount: transfer.amount,
       type: SAIDA,
       account_id: transfer.origin_account_id,
-      transfer_id: transfer.id
+      transfer_id: transfer.id,
+      status: TRANSACAO_CONCLUIDA
     }
 
     transfer.transactions[1] = {
@@ -116,7 +118,8 @@ module.exports = (app) => {
       amount: transfer.amount,
       type: ENTRADA,
       account_id: transfer.destination_account_id,
-      transfer_id: transfer.id
+      transfer_id: transfer.id,
+      status: TRANSACAO_CONCLUIDA
     }
 
     transfer.transactions[0].id = await app.services.transaction

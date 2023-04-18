@@ -69,6 +69,13 @@ Query builder para banco de dados, convertendo objetos em querys
 npm i -S -E knex@0.15.2
 ```
 
+## Instalando moment 
+Biblioteca para trabalhar com operações em data, como subtrair, adicionar dias, mês, etc.
+```sh
+npm i -S -E moment@2.22.2
+```
+
+
 ### Criando arquivo de migração usando knex
 ```sh
 node_modules/.bin/knex migrate:make create_users --env test

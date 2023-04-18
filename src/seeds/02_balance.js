@@ -1,8 +1,6 @@
 const faker = require('faker-br');
 
 const USER_PASSWORD = '$2a$10$39cN.qZ8MK7ElaMJGfEiHe3bJg//Vq7xV2viQKgg79a7Wvsc73tES'
-const SAIDA = 'SAIDA'
-const ENTRADA = 'ENTRADA'
 
 exports.seed = async (knex) => {
 
