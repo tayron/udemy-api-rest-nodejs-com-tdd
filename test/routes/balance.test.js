@@ -17,30 +17,47 @@ const TRANSACAO_PENDENTE = false
 
 const PRINCIPAL_USER_ID = 10100
 const SECONDARY_USER_ID = 10101
-let TOKEN = ''
+const THIRD_USER = 10102
+
+let PRINCIPAL_USER_TOKEN = ''
+let THIRD_USER_TOKEN = ''
 
 describe('Balanço da conta bancária do usuário', async () => {
   beforeAll(async () => {
     await app.db.seed.run();
 
-    const user = await app.services.user.findById(PRINCIPAL_USER_ID)
+    const principalUser = await app.services.user.findById(PRINCIPAL_USER_ID)
 
-    const credential = {
-      mail: user.mail,
+    const credentialPrincipalUser = {
+      mail: principalUser.mail,
       password: '123456'
     }
 
     await request(app)
       .post(`${AUTH_ROUTE}/signin`)
-      .send(credential)
+      .send(credentialPrincipalUser)
       .then(res => {
-        TOKEN = res.body.token
+        PRINCIPAL_USER_TOKEN = res.body.token
+      })
+
+    const thirdUser = await app.services.user.findById(THIRD_USER)
+
+    const credentialThirdUserUser = {
+      mail: thirdUser.mail,
+      password: '123456'
+    }
+
+    await request(app)
+      .post(`${AUTH_ROUTE}/signin`)
+      .send(credentialThirdUserUser)
+      .then(res => {
+        THIRD_USER_TOKEN = res.body.token
       })
   })
 
   test('Deve retornar apenas as contas com alguma transação', async () => {
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(0)
@@ -58,11 +75,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(1)
@@ -82,11 +99,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(1)
@@ -106,11 +123,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(1)
@@ -130,11 +147,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(2)
@@ -156,11 +173,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(2)
@@ -182,11 +199,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(2)
@@ -208,11 +225,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSACTION_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transaction)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(2)
@@ -233,11 +250,11 @@ describe('Balanço da conta bancária do usuário', async () => {
     }
 
     await request(app).post(TRANSFER_ROTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .send(transfer)
 
     await request(app).get(MAIN_ROUTE)
-      .set('authorization', `bearer ${TOKEN}`)
+      .set('authorization', `bearer ${PRINCIPAL_USER_TOKEN}`)
       .then(res => {
         expect(res.status).toBe(200)
         expect(res.body).toHaveLength(2)
@@ -245,6 +262,19 @@ describe('Balanço da conta bancária do usuário', async () => {
         expect(res.body[0].balance).toBe(-100)
         expect(res.body[1].id).toBe(SECONDARY_USER_ID)
         expect(res.body[1].balance).toBe(300.00)
+      })
+  })
+
+  test('Deve calcular saldo das contas do usuário', async () => {
+    await request(app).get(MAIN_ROUTE)
+      .set('authorization', `bearer ${THIRD_USER_TOKEN}`)
+      .then(res => {
+        expect(res.status).toBe(200)
+        expect(res.body).toHaveLength(2)
+        expect(res.body[0].id).toBe(10104)
+        expect(res.body[0].balance).toBe(226)
+        expect(res.body[1].id).toBe(10105)
+        expect(res.body[1].balance).toBe(-248)
       })
   })
 })
