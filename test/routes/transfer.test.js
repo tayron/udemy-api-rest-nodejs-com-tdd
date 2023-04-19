@@ -21,8 +21,8 @@ describe('Transferência bancaria do usuário', () => {
   let transferID
 
   beforeAll(async () => {
-    await app.db.migrate.rollback()
-    await app.db.migrate.latest()
+    // await app.db.migrate.rollback()
+    // await app.db.migrate.latest()
     await app.db.seed.run();
 
     const user = await app.services.user.findById(USER_ID)

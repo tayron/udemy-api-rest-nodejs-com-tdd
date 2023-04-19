@@ -24,8 +24,8 @@ let THIRD_USER_TOKEN = ''
 
 describe('Balanço da conta bancária do usuário', () => {
   beforeAll(async () => {
-    await app.db.migrate.rollback()
-    await app.db.migrate.latest()
+    //    await app.db.migrate.rollback()
+    //    await app.db.migrate.latest()
     await app.db.seed.run();
 
     const principalUser = await app.services.user.findById(PRINCIPAL_USER_ID)
