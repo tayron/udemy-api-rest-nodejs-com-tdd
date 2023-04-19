@@ -6,6 +6,8 @@ const faker = require('faker-br');
 const TOKEN_SECRET = 'Segredo'
 const MAIN_ROUTE = '/v1/accounts'
 
+const TABLE_TRANSACTIONS = 'transactions'
+const TABLE_TRANFERS = 'transfers'
 const TABLE_ACCOUNTS = 'accounts'
 
 let user1
@@ -71,6 +73,10 @@ describe('Conta bancária do usuário', () => {
   })
 
   test('Deve listar apenas as contas do usuário', async () => {
+    await app.db(TABLE_TRANSACTIONS).del()
+    await app.db(TABLE_TRANFERS).del()
+    await app.db(TABLE_ACCOUNTS).del()
+
     const accountUser1 = faker.finance.accountName()
 
     await app.db(TABLE_ACCOUNTS).insert([
@@ -86,7 +92,7 @@ describe('Conta bancária do usuário', () => {
     expect(req.body[req.body.length - 1].name).toBe(accountUser1)
   })
 
-  test('Deve retornar uma conta por id', async (done) => {
+  test('Deve retornar uma conta por id', async () => {
     const account = {
       name: faker.finance.accountName(),
       user_id: user1.id
@@ -97,9 +103,8 @@ describe('Conta bancária do usuário', () => {
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
-    if (!accountCreated) {
-      done.fail()
-    }
+    expect(accountCreated).toHaveProperty('name')
+    expect(accountCreated).toHaveProperty('user_id')
 
     await request(app).get(`${MAIN_ROUTE}/${accountCreated.id}`)
       .set('authorization', `bearer ${user1.token}`)
@@ -107,7 +112,6 @@ describe('Conta bancária do usuário', () => {
         expect(res.status).toBe(200)
         expect(res.body.name).toBe(account.name)
         expect(res.body.user_id).toBe(account.user_id)
-        done()
       })
   })
 
@@ -128,7 +132,7 @@ describe('Conta bancária do usuário', () => {
     expect(req.body.error).toBe('Este recurso não pertence a este usuário')
   })
 
-  test('Deve alterar uma conta', async (done) => {
+  test('Deve alterar uma conta', async () => {
     const account = {
       name: faker.finance.accountName(),
       user_id: user1.id
@@ -139,9 +143,8 @@ describe('Conta bancária do usuário', () => {
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
-    if (!accountCreated) {
-      done.fail()
-    }
+    expect(accountCreated).toHaveProperty('name')
+    expect(accountCreated).toHaveProperty('user_id')
 
     const newName = faker.finance.accountName()
 
@@ -152,7 +155,6 @@ describe('Conta bancária do usuário', () => {
         expect(res.status).toBe(200)
         expect(res.body.name).toBe(newName)
         expect(res.body.user_id).toBe(account.user_id)
-        done()
       })
   })
 
@@ -176,7 +178,7 @@ describe('Conta bancária do usuário', () => {
     expect(req.body.error).toBe('Este recurso não pertence a este usuário')
   })
 
-  test('Deve remover uma conta', async (done) => {
+  test('Deve remover uma conta', async () => {
     const account = {
       name: faker.finance.accountName(),
       user_id: user1.id
@@ -187,19 +189,17 @@ describe('Conta bancária do usuário', () => {
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
-    if (!accountCreated) {
-      done.fail()
-    }
+    expect(accountCreated).toHaveProperty('name')
+    expect(accountCreated).toHaveProperty('user_id')
 
     await request(app).delete(`${MAIN_ROUTE}/${accountCreated.id}`)
       .set('authorization', `bearer ${user1.token}`)
       .then(res => {
         expect(res.status).toBe(204)
-        done()
       })
   })
 
-  test('Não deve remover uma conta de outro usuário', async (done) => {
+  test('Não deve remover uma conta de outro usuário', async () => {
     const account = {
       name: faker.finance.accountName(),
       user_id: user1.id
@@ -210,16 +210,14 @@ describe('Conta bancária do usuário', () => {
     const accountCreated = await app.services.account
       .findByNameUserId(account.name, account.user_id)
 
-    if (!accountCreated) {
-      done.fail()
-    }
+    expect(accountCreated).toHaveProperty('name')
+    expect(accountCreated).toHaveProperty('user_id')
 
     await request(app).delete(`${MAIN_ROUTE}/${accountCreated.id}`)
       .set('authorization', `bearer ${user2.token}`)
       .then(res => {
         expect(res.status).toBe(403)
         expect(res.body.error).toBe('Este recurso não pertence a este usuário')
-        done()
       })
   })
 })

@@ -8,6 +8,7 @@ const TRANSACTION_ROTE = '/v1/transactions'
 const ACCOUNT_ROUTE = '/v1/accounts'
 
 const TABLE_TRANSACTIONS = 'transactions'
+const TABLE_TRANFERS = 'transfers'
 const TABLE_ACCOUNTS = 'accounts'
 const TABLE_USERS = 'users'
 
@@ -23,6 +24,7 @@ let accountUser2
 describe('Transação bancária do usuário', () => {
   beforeAll(async () => {
     await app.db(TABLE_TRANSACTIONS).del()
+    await app.db(TABLE_TRANFERS).del()
     await app.db(TABLE_ACCOUNTS).del()
     await app.db(TABLE_USERS).del()
 

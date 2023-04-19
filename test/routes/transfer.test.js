@@ -7,19 +7,22 @@ const AUTH_ROUTE = '/auth'
 
 const TRANSFERS_TABLE = 'transfers'
 const TRANSACTIONS_TABLE = 'transactions'
+
+const TRANSACAO_CONCLUIDA = true
+
 const ENTRADA = 'ENTRADA'
 const SAIDA = 'SAIDA'
 
 const USER_ID = 10000
 let TOKEN = ''
 
-describe('Transferência bancaria do usuário', async () => {
+describe('Transferência bancaria do usuário', () => {
 
   let transferID
 
   beforeAll(async () => {
-    //await app.db.migrate.rollback()
-    //await app.db.migrate.latest()
+    await app.db.migrate.rollback()
+    await app.db.migrate.latest()
     await app.db.seed.run();
 
     const user = await app.services.user.findById(USER_ID)
@@ -116,7 +119,7 @@ describe('Transferência bancaria do usuário', async () => {
 })
 
 
-describe('Transferência bancaria com transação', async () => {
+describe('Transferência bancaria com transação', () => {
   let transferId
   let transacaoEntrada
   let transacaoSaida
@@ -164,9 +167,14 @@ describe('Transferência bancaria com transação', async () => {
     expect(transacaoEntrada.transfer_id).toBe(transferId)
     expect(transacaoSaida.transfer_id).toBe(transferId)
   })
+
+  test('Todas as transações devem estar com status de realizadas', async () => {
+    expect(Boolean(transacaoEntrada.status)).toBe(TRANSACAO_CONCLUIDA)
+    expect(Boolean(transacaoSaida.status)).toBe(TRANSACAO_CONCLUIDA)
+  })
 })
 
-describe('Criando transferência bancaria inválida', async () => {
+describe('Criando transferência bancaria inválida', () => {
 
   const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
     const transferData = {
@@ -217,7 +225,7 @@ describe('Criando transferência bancaria inválida', async () => {
       { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
 })
 
-describe('Alterando transferência bancaria inválida', async () => {
+describe('Alterando transferência bancaria inválida', () => {
 
   const templateTestTransferenciaInvalida = async (newData, errorMessage) => {
     const transferData = {
@@ -268,7 +276,7 @@ describe('Alterando transferência bancaria inválida', async () => {
       { origin_account_id: 10002 }, 'A conta #10002 não pertence ao usuário'))
 })
 
-describe('Removendo transferência bancaria', async () => {
+describe('Removendo transferência bancaria', () => {
 
   test('Deve retornar o status 204', async () => {
     return request(app).delete(`${MAIN_ROTE}/10000`)

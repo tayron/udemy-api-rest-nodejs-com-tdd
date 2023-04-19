@@ -37,7 +37,7 @@ node_modules/.bin/eslint inde.js --fix
 
 ## Instalando Jest
 ```sh
-npm i -D jest@23.6.0 -E
+npm i -D jest@29.5.0 -E
 ```
 **Obs.:** A flag -E é para garantir que a versão do jest não seja alterada no futuro
 

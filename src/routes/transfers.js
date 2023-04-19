@@ -67,17 +67,6 @@ module.exports = (app) => {
     }
   })
 
-  router.get('/:id', async (req, res, next) => {
-    try {
-      await app.services.transfer.findById(req.params.id)
-        .then(result => {
-          return res.status(200).send(result)
-        })
-    } catch (err) {
-      next(err)
-    }
-  })
-
   router.put('/:id', validate, async (req, res, next) => {
     try {
       const transferId = req.params.id
@@ -128,6 +117,17 @@ module.exports = (app) => {
     transfer.transactions[1].id = await app.services.transaction
       .create(transfer.transactions[1])
   }
+
+  router.get('/:id', async (req, res, next) => {
+    try {
+      await app.services.transfer.findById(req.params.id)
+        .then(result => {
+          return res.status(200).send(result)
+        })
+    } catch (err) {
+      next(err)
+    }
+  })
 
   router.delete('/:id', async (req, res, next) => {
     try {
