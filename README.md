@@ -75,6 +75,11 @@ Biblioteca para trabalhar com operações em data, como subtrair, adicionar dias
 npm i -S -E moment@2.22.2
 ```
 
+## Instalando husky
+Biblioteca para que ao rodar o commit seja executado os testes unitários antes
+```sh
+npm i -S -E husky@1.2.0
+```
 
 ### Criando arquivo de migração usando knex
 ```sh

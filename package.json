@@ -3,6 +3,24 @@
   "version": "1.0.0",
   "description": "Link do curso: https://www.udemy.com/course/api-rest-nodejs-com-testes",
   "main": "inde.js",
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 50,
+        "functions": 80,
+        "lines": 80
+      },
+      "./src/services": {
+        "lines": 90
+      }
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm test"
+    }
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "jest --coverage --runInBand --detectOpenHandles --forceExit",
@@ -31,6 +49,7 @@
     "consign": "0.1.6",
     "express": "4.16.4",
     "faker-br": "0.4.1",
+    "husky": "1.2.0",
     "jwt-simple": "0.5.5",
     "knex": "0.15.2",
     "knex-logger": "0.1.0",
