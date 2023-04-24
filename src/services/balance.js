@@ -14,9 +14,7 @@ module.exports = (app) => {
       .groupBy(`${ACCOUNTS_TABLE}.id`)
       .orderBy(`${ACCOUNTS_TABLE}.id`)
 
-    return balance
-
-      ? JSON.parse(JSON.stringify(balance)) : null
+    return balance ? JSON.parse(JSON.stringify(balance)) : null
   }
 
   return { getBalanceByUserId }
