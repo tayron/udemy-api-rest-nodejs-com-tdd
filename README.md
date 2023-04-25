@@ -81,6 +81,13 @@ Biblioteca para que ao rodar o commit seja executado os testes unitários antes
 npm i -S -E husky@1.2.0
 ```
 
+## Instalando uuidv4 e winston
+Biblioteca para logar os eventos da aplicação
+```sh
+npm i -S -E uuidv4@2.0.0 winston@3.1.0
+```
+
+
 ### Criando arquivo de migração usando knex
 ```sh
 node_modules/.bin/knex migrate:make create_users --env test

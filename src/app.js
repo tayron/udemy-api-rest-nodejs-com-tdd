@@ -2,9 +2,27 @@ const app = require('express')();
 const consign = require('consign');
 const knex = require('knex');
 const knexfile = require('../knexfile');
+const winston = require('winston');
+const uuid = require('uuidv4');
 
-// TODO criar chaveamento dinamico
 app.db = knex(knexfile[process.env.NODE_ENV])
+
+app.log = winston.createLogger({
+  level: 'debug',
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.json({ space: 1 })
+    }),
+    new winston.transports.File({
+      filename: 'logs/error.log',
+      level: 'warn',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json({ space: 1 })
+      )
+    })
+  ]
+})
 
 consign({ cwd: 'src', verbose: false })
   .include('./config/passport.js')
@@ -27,8 +45,9 @@ app.use((err, req, res, next) => {
     res.status(403).json({ error: message })
 
   else {
-    console.error(message)
-    res.status(500).json({ name, message, stack })
+    const id = uuid()
+    app.log.error({ id, name, message, stack })
+    res.status(500).json({ id, error: 'Falha interna' })
   }
 
   next(err)
