@@ -98,6 +98,11 @@ Visualizando processo
 ```sh
 pm2 status
 ```
+Restartando servidor
+```sh
+pm2 restart 0
+```
+
 Parando processo
 ```sh
 pm2 stop 0
@@ -169,6 +174,10 @@ npm i -S -E passport@0.4.0
 npm i -S -E passport-jwt@4.0.0
 ```
 
+## Instalando dependencia para tratar cors
+```sh
+npm i -S -E cors@2.8.5
+```
 ## Versionamento de biblioteca
 
 **Exemplo: v 1.2.3**
