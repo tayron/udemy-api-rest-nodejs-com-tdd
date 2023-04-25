@@ -87,6 +87,26 @@ Biblioteca para logar os eventos da aplicação
 npm i -S -E uuidv4@2.0.0 winston@3.1.0
 ```
 
+## Instalando PM2 - Advaced, production process manager for NodeJS
+Usando a ferramenta para manter sempre o servidor em pé com nodeJS
+```sh
+npm i pm2 -g
+pm2 start npm --start 
+```
+
+Visualizando processo
+```sh
+pm2 status
+```
+Parando processo
+```sh
+pm2 stop 0
+```
+
+Desinstalando a ferramenta pm2
+```sh
+npm uninstall pm2 -g
+```
 
 ### Criando arquivo de migração usando knex
 ```sh
