@@ -16,7 +16,7 @@ describe('Autenticação do usuário', () => {
     return request(app).post(`${MAIN_ROUTE}/signup`)
       .send(user)
       .then(res => {
-        expect(res.status).toBe(200)
+        expect(res.status).toBe(201)
         expect(res.body.name).toBe(user.name)
         expect(res.body).toHaveProperty('mail')
         expect(res.body).not.toHaveProperty('senha')
@@ -66,7 +66,7 @@ describe('Autenticação do usuário', () => {
         }))
   })
 
-  test('Não deve autenticar usuário com emal errado', () => {
+  test('Não deve autenticar usuário com email errado', () => {
     const user = {
       name: faker.internet.userName(),
       mail: faker.internet.email(),

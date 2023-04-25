@@ -12,7 +12,7 @@ module.exports = (app) => {
       const user = await app.services.user
         .getAllDataByMail(req.body.mail)
 
-      if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
+      if (!user || !bcrypt.compareSync(String(req.body.password), user.password)) {
         throw new ValidationError('Usuário ou senha inválido')
       }
 
@@ -39,7 +39,7 @@ module.exports = (app) => {
         throw new ValidationError('Usuário não criado')
       }
 
-      return res.status(200).send(user)
+      return res.status(201).send(user)
     } catch (err) {
       next(err)
     }

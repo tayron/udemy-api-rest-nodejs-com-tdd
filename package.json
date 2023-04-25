@@ -22,10 +22,10 @@
     }
   },
   "scripts": {
-    "start": "node src/server.js",
-    "test": "jest --coverage --runInBand --detectOpenHandles --forceExit",
+    "start": "NODE_ENV=production node src/server.js",
+    "test": "NODE_ENV=test jest --coverage --runInBand --detectOpenHandles --forceExit",
     "lint": "eslint src/** test/** --fix",
-    "secure-mode": "jest --watch --verbose=true"
+    "secure-mode": "NODE_ENV=test jest --watch --verbose=true"
   },
   "repository": {
     "type": "git",
